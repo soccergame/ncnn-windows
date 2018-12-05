@@ -37,6 +37,9 @@ namespace
     AutoArray<unsigned char> pWeightBuf;
     const float mean_vals[3] = { 127.5, 127.5, 127.5 };
     const float norm_vals[3] = { 0.0078125, 0.0078125, 0.0078125 };
+
+    volatile bool g_bFaceGenderInited = false;
+    volatile int g_FaceGenderInitCount = 0;
 }
 
 int __stdcall GetFaceGenderScore(GenderHandle handle,
@@ -48,6 +51,9 @@ int __stdcall GetFaceGenderScore(GenderHandle handle,
 
     if (1 != channel && 3 != channel)
         return INVALID_IMAGE_FORMAT;
+
+    if (!g_bFaceGenderInited)
+        return MODEL_NOT_INITIALIZED;
 
     int nRet = 0;
     //clock_t count;
@@ -170,6 +176,12 @@ int __stdcall InitFaceGender(const char *szNetName,
 	*pHandle = NULL;
 	std::locale::global(std::locale(""));
 
+    if (g_bFaceGenderInited)
+    {
+        ++g_FaceGenderInitCount;
+        return OK;
+    }
+
 	int retValue = 0;
 
 #ifndef _WIN32	
@@ -244,6 +256,9 @@ int __stdcall InitFaceGender(const char *szNetName,
         affineNorm.Initialize(96, 128, 0.78125, 128, NormPoints_128);
 
 		*pHandle = reinterpret_cast<GenderHandle>(pCaffeNet);
+
+        g_bFaceGenderInited = true;
+        ++g_FaceGenderInitCount;
 #endif
 	}
 	catch (const std::bad_alloc &)
@@ -272,6 +287,12 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
     // initialize deep face network
     *pHandle = NULL;
     std::locale::global(std::locale(""));
+
+    if (g_bFaceGenderInited)
+    {
+        ++g_FaceGenderInitCount;
+        return OK;
+    }
 
     int retValue = 0;
 
@@ -312,6 +333,9 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
         affineNorm.Initialize(96, 128, 0.78125, 128, NormPoints_128);
 
         *pHandle = reinterpret_cast<GenderHandle>(pCaffeNet);
+
+        g_bFaceGenderInited = true;
+        ++g_FaceGenderInitCount;
     }
     catch (const std::bad_alloc &)
     {
@@ -331,9 +355,16 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
 
 int __stdcall UninitFaceGender(GenderHandle handle)
 {
-    ncnn::Net *pCaffeNet = reinterpret_cast<ncnn::Net *>(handle);
-    pCaffeNet->clear();
-	delete pCaffeNet;
+    --g_FaceGenderInitCount;
+    if (g_FaceGenderInitCount == 0) {
 
+        // 初始化变量修改
+        g_bFaceGenderInited = false;
+
+        ncnn::Net *pCaffeNet = reinterpret_cast<ncnn::Net *>(handle);
+        pCaffeNet->clear();
+        delete pCaffeNet;
+    }
+    
 	return 0;
 }
