@@ -1,0 +1,7 @@
+LIBRARY	"face_gender"
+EXPORTS
+	SetFaceGenderLibPath	@1
+	InitFaceGender			@2
+	InitOLDFaceGender		@3
+	UninitFaceGender		@4
+	GetFaceGenderScore		@5

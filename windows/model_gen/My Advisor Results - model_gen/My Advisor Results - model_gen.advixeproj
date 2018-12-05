@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+ <rdmgr>
+  <timestamp type="u64_t">1543230753</timestamp>
+  <hostname>DESKTOP-CCANLVR</hostname>
+  <os>windows</os>
+  <product>Intel® Advisor 2018 Update 4</product>
+  <buildNumber type="s32_t">574144</buildNumber>
+  <logicalCPUCount type="s32_t">4</logicalCPUCount>
+  <physicalCoreCount type="s32_t">2</physicalCoreCount>
+  <CPUFrequency type="s64_t">2300000000</CPUFrequency>
+  <CPUFamily type="s32_t">6</CPUFamily>
+  <CPUModel type="s32_t">78</CPUModel>
+  <CPUStepping type="s32_t">3</CPUStepping>
+  <CPUBrandName>Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz</CPUBrandName>
+  <isa>avx2</isa>
+ </rdmgr>
+</root>

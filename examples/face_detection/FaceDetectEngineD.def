@@ -1,0 +1,7 @@
+LIBRARY	"FaceDetectEngineD"
+EXPORTS
+	FaceDetect_setLibPath	@1
+	FaceDetect_init			@2
+	FaceDetect_maxDetect	@3
+	FaceDetect_release		@4
+	FaceDetect_Detect		@5

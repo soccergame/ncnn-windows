@@ -1,0 +1,7 @@
+LIBRARY	"face_beautyD"
+EXPORTS
+	SetFaceBeautyLibPath	@1
+	InitFaceBeauty			@2
+	InitOLDFaceBeauty		@3
+	UninitFaceBeauty		@4
+	GetFaceBeautyScore		@5
