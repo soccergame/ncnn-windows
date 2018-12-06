@@ -355,16 +355,17 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
 
 int __stdcall UninitFaceGender(GenderHandle handle)
 {
-    --g_FaceGenderInitCount;
-    if (g_FaceGenderInitCount == 0) {
+    if (g_bFaceGenderInited) {
+        --g_FaceGenderInitCount;
+        if (g_FaceGenderInitCount == 0) {
 
-        // 初始化变量修改
-        g_bFaceGenderInited = false;
+            // 初始化变量修改
+            g_bFaceGenderInited = false;
 
-        ncnn::Net *pCaffeNet = reinterpret_cast<ncnn::Net *>(handle);
-        pCaffeNet->clear();
-        delete pCaffeNet;
+            ncnn::Net *pCaffeNet = reinterpret_cast<ncnn::Net *>(handle);
+            pCaffeNet->clear();
+            delete pCaffeNet;
+        }
     }
-    
 	return 0;
 }
