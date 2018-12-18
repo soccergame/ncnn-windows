@@ -63,6 +63,18 @@ extern "C"
     int __stdcall GetFaceRecognitionFeature(RecognitionHandle handle,
         const float *feaPoints, const unsigned char *image_data, int width, 
         int height, int channel, float **feature, int &fea_dim);
+
+    /**
+    *	功能： 获取人脸特征
+    *	输入：BeautyHandle 模型指针
+    *         feaPoints 五个关键点
+    *         norm_data 归一化好的人脸图像，可以直接将cv::mat中的image.data传入
+    *   输出：
+    *         pFeatures 返回的特征
+    *         fea_dim 返回的pFeatures的长度
+    */
+    int __stdcall GetFaceRecognitionFeatureRaw(RecognitionHandle handle,
+        const unsigned char *norm_data, float **feature, int &fea_dim);
 #ifdef __cplusplus
 }
 #endif

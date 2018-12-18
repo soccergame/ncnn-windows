@@ -120,6 +120,57 @@ int __stdcall GetFaceRecognitionFeature(RecognitionHandle handle,
     return nRet;
 }
 
+int __stdcall GetFaceRecognitionFeatureRaw(RecognitionHandle handle,
+    const unsigned char *norm_data, float **feature, int &fea_dim)
+{
+    if (norm_data == 0)
+        return  INVALID_IMAGE;
+
+    if (!g_bFaceRecognitionInited)
+        return MODEL_NOT_INITIALIZED;
+
+    int nRet = 0;
+    //clock_t count;
+    try
+    {
+        ncnn::Mat ncnn_face_img = ncnn::Mat::from_pixels(
+            norm_data, ncnn::Mat::PIXEL_BGR2RGB, 112, 112);
+        if (ncnn_face_img.empty())
+            return INVALID_IMAGE;
+
+        ncnn::Net *pCaffeNet = reinterpret_cast<ncnn::Net *>(handle);
+        ncnn::Extractor ex = pCaffeNet->create_extractor();
+        ex.set_light_mode(g_light_mode);
+        ex.set_num_threads(g_num_threads);
+
+        //count = clock();
+        ex.input("data", ncnn_face_img);
+        ncnn::Mat out;
+        ex.extract("fc1", out);
+
+        fea_dim = out.total();
+        (*feature) = new float[out.total()];
+        for (int j = 0; j<out.total(); j++)
+        {
+            (*feature)[j] = out[j];
+        }
+    }
+    catch (const std::bad_alloc &)
+    {
+        nRet = -2;
+    }
+    catch (const int &errCode)
+    {
+        nRet = errCode;
+    }
+    catch (...)
+    {
+        nRet = -3;
+    }
+
+    return nRet;
+}
+
 
 int __stdcall SetFaceRecognitionLibPath(const char *szLibPath)
 {

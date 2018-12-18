@@ -162,7 +162,7 @@
       <AdditionalDependencies>libncnnD.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <ForceFileOutput>MultiplyDefinedSymbolOnly</ForceFileOutput>
-      <ModuleDefinitionFile>..\..\examples\face_gender\face_genderD.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\examples\face_recognition\face_recognitionD.def</ModuleDefinitionFile>
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>D:\project\common\libs\opencv2413\vc14\x64\staticlib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -226,7 +226,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Build\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libncnn.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>..\..\examples\face_gender\face_gender.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\examples\face_recognition\face_recognition.def</ModuleDefinitionFile>
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>D:\project\common\libs\opencv2413\vc14\x64\staticlib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
