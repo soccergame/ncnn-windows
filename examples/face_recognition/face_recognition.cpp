@@ -13,7 +13,7 @@
 
 #define GLOG_NO_ABBREVIATED_SEVERITIES
 
-#include "face_gender.h"
+#include "face_recognition.h"
 #include "NormFaceImage.h"
 #include "autoarray.h"
 #include "Error_Code.h"
@@ -24,28 +24,27 @@
 #define _MAX_PATH 260
 #endif
 
-#define FACE_GENDER_MODEL_NAME "libsnfa.so"
-#define FACE_GENDER_PARAM_NAME "libsnfa.param"
-#define FACE_GENDER_BIN_NAME "libsnfa.bin"
+#define FACE_RECOG_MODEL_NAME "mobileFaceNet.so"
+#define FACE_RECOG_PARAM_NAME "mobileFaceNet.param"
+#define FACE_RECOG_BIN_NAME "mobileFaceNet.bin"
 
 namespace
 {
     char g_szDeepFeatSDKPath[_MAX_PATH] = { 0 };
     int g_num_threads = 1;
     bool g_light_mode = true;
-    hzx::CNormImage3pt affineNorm;
+    hzx::CNormImageSimilarity affineNorm;
     AutoArray<unsigned char> pWeightBuf;
     const float mean_vals[3] = { 127.5, 127.5, 127.5 };
     const float norm_vals[3] = { 0.0078125, 0.0078125, 0.0078125 };
 
-    volatile bool g_bFaceGenderInited = false;
-    volatile int g_FaceGenderInitCount = 0;
+    volatile bool g_bFaceRecognitionInited = false;
+    volatile int g_FaceRecognitionInitCount = 0;
 }
 
-int __stdcall GetFaceGenderScore(GenderHandle handle,
+int __stdcall GetFaceRecognitionFeature(RecognitionHandle handle,
     const float *feaPoints, const unsigned char *image_data, int width,
-    int height, int channel, float &gender_score, int &age, float &beauty_score,
-    float &glass_score, int &emotion, float &happy_score)
+    int height, int channel, float **feature, int &fea_dim)
 {
     if (image_data == 0 || width <= 0 || height <= 0)
         return  INVALID_IMAGE;
@@ -53,14 +52,14 @@ int __stdcall GetFaceGenderScore(GenderHandle handle,
     if (1 != channel && 3 != channel)
         return INVALID_IMAGE_FORMAT;
 
-    if (!g_bFaceGenderInited)
+    if (!g_bFaceRecognitionInited)
         return MODEL_NOT_INITIALIZED;
 
     int nRet = 0;
     //clock_t count;
     try
     {
-        ncnn::Mat ncnn_face_img(96, 128, 3, 4u);
+        ncnn::Mat ncnn_face_img(112, 112, 3, 4u);
         if (ncnn_face_img.empty())
             return INVALID_IMAGE;
 
@@ -69,8 +68,7 @@ int __stdcall GetFaceGenderScore(GenderHandle handle,
         if (channel == 3) {
             affineNorm.NormImageRaw2Planar(image_data, width, height,
                 channel, feaPoints, 5, (float *)ncnn_face_img);
-
-            ncnn_face_img.substract_mean_normalize(mean_vals, norm_vals);
+            //ncnn_face_img.substract_mean_normalize(mean_vals, norm_vals);
         }
         else {
             float* ptr0 = ncnn_face_img.channel(0);
@@ -80,8 +78,8 @@ int __stdcall GetFaceGenderScore(GenderHandle handle,
                 image_data, //pImage.begin() + j * testImg.rows * testImg.cols,
                 width, height, feaPoints, 5,
                 ptr0);
-            memcpy(ptr1, ptr0, sizeof(float) * 12288);
-            memcpy(ptr2, ptr0, sizeof(float) * 12288);
+            memcpy(ptr1, ptr0, sizeof(float) * 12544);
+            memcpy(ptr2, ptr0, sizeof(float) * 12544);
 
             ncnn_face_img.substract_mean_normalize(mean_vals, norm_vals);
         }
@@ -97,41 +95,14 @@ int __stdcall GetFaceGenderScore(GenderHandle handle,
         //count = clock();
         ex.input("data", ncnn_face_img);
         ncnn::Mat out;
-        ex.extract("output", out);
+        ex.extract("fc1", out);
 
-        //count = clock() - count;
-        //std::cout << "Feature: " << count << std::endl;
-
-        //count = clock();
-        //AutoArray<float> pFeatures(out.total());
-        //for (int j = 0; j<out.total(); j++)
-        /*{
-            pFeatures[j] = out[j];
-        }*/
-
-        gender_score = out[0];
-        glass_score = out[3];
-        happy_score = out[7];
-        float max_score = -1.0f;
-        for (int c = 0; c < 7; ++c) {
-            if (max_score < out[c + 4]) {
-                max_score = out[c + 4];
-                emotion = c;
-            }   
-        }
-        age = 0;
-        int iter = (out.total() - 12) / 2;
-        for (int c = 0; c < iter; ++c)
+        fea_dim = out.total();
+        (*feature) = new float[out.total()];
+        for (int j = 0; j<out.total(); j++)
         {
-            if (out[2 * c + 11] < out[2 * c + 12])
-                age++;
+            (*feature)[j] = out[j];
         }
-        age = age + 16;
-
-        beauty_score = out[out.total() - 1];
-
-        //count = clock() - count;
-        //std::cout << "result: " << count << std::endl;
     }
     catch (const std::bad_alloc &)
     {
@@ -150,7 +121,7 @@ int __stdcall GetFaceGenderScore(GenderHandle handle,
 }
 
 
-int __stdcall SetFaceGenderLibPath(const char *szLibPath)
+int __stdcall SetFaceRecognitionLibPath(const char *szLibPath)
 {
 	if (szLibPath == NULL)
 		return -1;
@@ -176,8 +147,8 @@ int __stdcall SetFaceGenderLibPath(const char *szLibPath)
 	return 0;
 }
 
-int __stdcall InitFaceGender(const char *szNetName,
-    GenderHandle *pHandle, int num_threads, bool light_mode)
+int __stdcall InitFaceRecognition(const char *szNetName,
+    RecognitionHandle *pHandle, int num_threads, bool light_mode)
 {
 	if (pHandle == NULL)
 		return -1;
@@ -186,9 +157,9 @@ int __stdcall InitFaceGender(const char *szNetName,
 	*pHandle = NULL;
 	std::locale::global(std::locale(""));
 
-    if (g_bFaceGenderInited)
+    if (g_bFaceRecognitionInited)
     {
-        ++g_FaceGenderInitCount;
+        ++g_FaceRecognitionInitCount;
         return OK;
     }
 
@@ -207,7 +178,7 @@ int __stdcall InitFaceGender(const char *szNetName,
         if (szNetName != 0)
             strDllPath += szNetName;
         else
-            strDllPath += FACE_GENDER_MODEL_NAME;
+            strDllPath += FACE_RECOG_MODEL_NAME;
 
         std::fstream fileModel;
         fileModel.open(strDllPath.c_str(), std::fstream::in | std::fstream::binary);
@@ -256,19 +227,20 @@ int __stdcall InitFaceGender(const char *szNetName,
         g_num_threads = num_threads;
         g_light_mode = light_mode;
 
-        float NormPoints_128[10] = {
+        /*float NormPoints_128[10] = {
             35.5f, 55.48f,
             91.5f, 55.48f,
             63.5f, 83.98f,
             45.5f, 111.48f,
             81.5f, 111.48f,
         };
-        affineNorm.Initialize(96, 128, 0.78125, 128, NormPoints_128);
+        affineNorm.Initialize(96, 128, 0.78125, 128, NormPoints_128);*/
+        affineNorm.Initialize(112, 112, 1.0);
 
-		*pHandle = reinterpret_cast<GenderHandle>(pCaffeNet);
+		*pHandle = reinterpret_cast<RecognitionHandle>(pCaffeNet);
 
-        g_bFaceGenderInited = true;
-        ++g_FaceGenderInitCount;
+        g_bFaceRecognitionInited = true;
+        ++g_FaceRecognitionInitCount;
 #endif
 	}
 	catch (const std::bad_alloc &)
@@ -287,8 +259,8 @@ int __stdcall InitFaceGender(const char *szNetName,
 	return retValue;
 }
 
-int __stdcall InitOLDFaceGender(const char *szParamName,
-    const char *szBinName, GenderHandle *pHandle,
+int __stdcall InitOLDFaceRecognition(const char *szParamName,
+    const char *szBinName, RecognitionHandle *pHandle,
     int num_threads, bool light_mode)
 {
     if (pHandle == NULL)
@@ -298,9 +270,9 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
     *pHandle = NULL;
     std::locale::global(std::locale(""));
 
-    if (g_bFaceGenderInited)
+    if (g_bFaceRecognitionInited)
     {
-        ++g_FaceGenderInitCount;
+        ++g_FaceRecognitionInitCount;
         return OK;
     }
 
@@ -319,12 +291,12 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
         if (szParamName != 0)
             strParamPath += szParamName;
         else
-            strParamPath += FACE_GENDER_PARAM_NAME;
+            strParamPath += FACE_RECOG_PARAM_NAME;
 
         if (szBinName != 0)
             strBinPath += szBinName;
         else
-            strBinPath += FACE_GENDER_BIN_NAME;
+            strBinPath += FACE_RECOG_BIN_NAME;
 
         ncnn::Net *pCaffeNet = new ncnn::Net();
         pCaffeNet->load_param(strParamPath.c_str());
@@ -333,19 +305,19 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
         g_num_threads = num_threads;
         g_light_mode = light_mode;
 
-        float NormPoints_128[10] = {
+        /*float NormPoints_128[10] = {
             35.5f, 55.48f,
             91.5f, 55.48f,
             63.5f, 83.98f,
             45.5f, 111.48f,
             81.5f, 111.48f,
-        };
-        affineNorm.Initialize(96, 128, 0.78125, 128, NormPoints_128);
+        };*/
+        affineNorm.Initialize(112, 112, 1.0);
 
-        *pHandle = reinterpret_cast<GenderHandle>(pCaffeNet);
+        *pHandle = reinterpret_cast<RecognitionHandle>(pCaffeNet);
 
-        g_bFaceGenderInited = true;
-        ++g_FaceGenderInitCount;
+        g_bFaceRecognitionInited = true;
+        ++g_FaceRecognitionInitCount;
     }
     catch (const std::bad_alloc &)
     {
@@ -363,14 +335,14 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
     return retValue;
 }
 
-int __stdcall UninitFaceGender(GenderHandle handle)
+int __stdcall UninitFaceRecognition(RecognitionHandle handle)
 {
-    if (g_bFaceGenderInited) {
-        --g_FaceGenderInitCount;
-        if (g_FaceGenderInitCount == 0) {
+    if (g_bFaceRecognitionInited) {
+        --g_FaceRecognitionInitCount;
+        if (g_FaceRecognitionInitCount == 0) {
 
             // 初始化变量修改
-            g_bFaceGenderInited = false;
+            g_bFaceRecognitionInited = false;
 
             ncnn::Net *pCaffeNet = reinterpret_cast<ncnn::Net *>(handle);
             pCaffeNet->clear();

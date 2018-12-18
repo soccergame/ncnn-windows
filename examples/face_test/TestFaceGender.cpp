@@ -134,11 +134,15 @@ int main(int argc, char** argv)
         int age = 0;
         float gender_score = 0.0f;
         float beauty_score = 0.0f;
+        float glass_score = 0.0f;
+        float happy_score = 0.0f;
+        int emotion = 0;
         for (int test_idx = 0; test_idx < 1; ++test_idx) {
             timeCount.Start();
             retValue = GetFaceGenderScore(hFace, face_box.keypoints,
                 cvt_image.data, oriImgData.cols, oriImgData.rows,
-                oriImgData.channels(), gender_score, age, beauty_score);
+                oriImgData.channels(), gender_score, age, beauty_score,
+                glass_score, emotion, happy_score);
             timeCount.Stop();
             std::cout << "[" << test_idx << "]Gender: " 
                 << 1000 * timeCount.GetTime() << "ms" << std::endl;
@@ -159,6 +163,26 @@ int main(int argc, char** argv)
             std::cout << "Age: " << age << std::endl;
 
         std::cout << "Beauty: " << beauty_score << std::endl;
+
+        if (glass_score > 0.5f)
+            std::cout << "Wear glasses" << std::endl;
+        else
+            std::cout << "No glasses" << std::endl;
+
+        if (0 == emotion)
+            std::cout << "angery" << std::endl;
+        else if (1 == emotion)
+            std::cout << "disgusted" << std::endl;
+        else if (2 == emotion)
+            std::cout << "fearful" << std::endl;
+        else if (3 == emotion) 
+            std::cout << "happy, score: " << happy_score << std::endl;
+        else if (4 == emotion)
+            std::cout << "neutral" << std::endl;
+        else if (5 == emotion)
+            std::cout << "sad" << std::endl;
+        else if (6 == emotion)
+            std::cout << "surprise" << std::endl;
 #else
         char path_list[512] = { 0 };
         strcpy(path_list, strImgName.c_str());

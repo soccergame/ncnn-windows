@@ -1,0 +1,7 @@
+LIBRARY	"face_recognitionD"
+EXPORTS
+	SetFaceRecognitionLibPath	@1
+	InitFaceRecognition			@2
+	InitOLDFaceRecognition		@3
+	UninitFaceRecognition		@4
+	GetFaceRecognitionFeature	@5
