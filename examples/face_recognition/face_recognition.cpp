@@ -278,15 +278,15 @@ int __stdcall InitFaceRecognition(const char *szNetName,
         g_num_threads = num_threads;
         g_light_mode = light_mode;
 
-        /*float NormPoints_128[10] = {
-            35.5f, 55.48f,
-            91.5f, 55.48f,
-            63.5f, 83.98f,
-            45.5f, 111.48f,
-            81.5f, 111.48f,
+        float NormPoints_128[10] = {
+            38.2946f, 51.6963f,
+            73.5318f, 51.5014f,
+            56.0252f, 71.7366f,
+            41.5493f, 92.3655f,
+            70.7299f, 92.2041f,
         };
-        affineNorm.Initialize(96, 128, 0.78125, 128, NormPoints_128);*/
-        affineNorm.Initialize(112, 112, 1.0);
+        /*affineNorm.Initialize(96, 128, 0.78125, 128, NormPoints_128);*/
+        affineNorm.Initialize(112, 112, 1.0, 112, NormPoints_128);
 
 		*pHandle = reinterpret_cast<RecognitionHandle>(pCaffeNet);
 

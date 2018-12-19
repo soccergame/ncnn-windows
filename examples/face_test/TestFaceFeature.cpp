@@ -77,13 +77,13 @@ int main(int argc, char** argv)
 {
     if (argc != 3) {
         std::cout << "usage:" << std::endl;
-        std::cout << "mtcnn_test <module_path> <filename>" << std::endl;
+        std::cout << "mtcnn_test <module_path> <base_path> <filelist> <output>" << std::endl;
         return -1;
     }
     std::string modulePath = argv[1];
     const char* pModulePath = modulePath.c_str();
         
-    std::string strImgName = argv[2];
+    std::string base_path = argv[2];
     int retValue = 0;
     float maxR = 0;
     int label = 0;
@@ -117,31 +117,63 @@ int main(int argc, char** argv)
         // Read Image
         //cv::Mat garyImgData = cv::imread(strImgName, CV_LOAD_IMAGE_GRAYSCALE);
 #ifdef _WIN32
-        cv::Mat oriImgData = cv::imread(strImgName, CV_LOAD_IMAGE_COLOR);
-        // Face detection
-        timeCount.Start();
-        SN::DetectedFaceBox face_box;
-        retValue = FaceDetect_maxDetect(hDetect, oriImgData, face_box);
-        if (0 != retValue)
-            throw retValue;
+        vector<string> imgList;
+        std::ifstream infile(argv[3]);
+        std::string line;
+        while (std::getline(infile, line)) {
+            imgList.push_back(line);
+        }
+        infile.close();
 
-        timeCount.Stop();
-        std::cout << "Detection: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
-        
-        cv::Mat cvt_image;
-        cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2RGB);
+        std::ofstream outfile(argv[4]);
 
-        float *feature = 0;
-        int fea_dim = 0;
-        for (int test_idx = 0; test_idx < 1; ++test_idx) {
-            timeCount.Start();
+        for (int i = 0; i < imgList.size(); ++i) {
+            std::string strImgName = base_path + imgList[i];
+            cv::Mat oriImgData = cv::imread(strImgName, CV_LOAD_IMAGE_COLOR);
+            SN::DetectedFaceBox face_box;
+            retValue = FaceDetect_maxDetect(hDetect, oriImgData, face_box);
+            if (0 != retValue)
+                continue;
+
+            cv::Mat cvt_image;
+            cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2RGB);
+
+            float *feature = 0;
+            int fea_dim = 0;
+
             retValue = GetFaceRecognitionFeature(hFace, face_box.keypoints,
                 cvt_image.data, oriImgData.cols, oriImgData.rows,
                 oriImgData.channels(), &feature, fea_dim);
-            timeCount.Stop();
-            std::cout << "[" << test_idx << "]Gender: " 
-                << 1000 * timeCount.GetTime() << "ms" << std::endl;
+
+            outfile << imgList[i] << ": ";
+            for (int j = 0; j < fea_dim; ++j)
+                outfile << feature[j] << " ";
+            outfile << std::endl;
+
+            delete[] feature;
+            feature = 0;
         }
+
+        outfile.close();
+        
+        // Face detection
+        //timeCount.Start();
+        
+
+        //timeCount.Stop();
+        //std::cout << "Detection: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
+        
+        
+
+        
+        //for (int test_idx = 0; test_idx < 1; ++test_idx) {
+            //timeCount.Start();
+        
+            //timeCount.Stop();
+            //std::cout << "[" << test_idx << "]Gender: " 
+            //    << 1000 * timeCount.GetTime() << "ms" << std::endl;
+        //}
+
 
         
 #else
