@@ -75,7 +75,7 @@ void readFileList(const char* basePath, vector<string>& imgFiles)
 
 int main(int argc, char** argv)
 {
-    if (argc != 3) {
+    if (argc != 5) {
         std::cout << "usage:" << std::endl;
         std::cout << "mtcnn_test <module_path> <base_path> <filelist> <output>" << std::endl;
         return -1;
