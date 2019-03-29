@@ -16,5 +16,8 @@
     <ClCompile Include="..\..\examples\face_test\TestFaceFeature.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\examples\face_test\TestFaceGender.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

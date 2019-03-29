@@ -19,6 +19,10 @@
 #include "Error_Code.h"
 #include "net.h"
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
 
 #ifndef _WIN32
 #define _MAX_PATH 260
@@ -68,6 +72,19 @@ int __stdcall GetFaceRecognitionFeature(RecognitionHandle handle,
         if (channel == 3) {
             affineNorm.NormImageRaw2Planar(image_data, width, height,
                 channel, feaPoints, 5, (float *)ncnn_face_img);
+            /*AutoArray<unsigned char> trans_image_data(112 * 112 * 3);
+            affineNorm.NormImageRaw2Planar(image_data, width, height,
+                channel, feaPoints, 5, trans_image_data.begin());
+            cv::Mat img1 = cv::Mat(112, 112, CV_8UC1, trans_image_data.begin());
+            cv::Mat img2 = cv::Mat(112, 112, CV_8UC1, trans_image_data.begin() + 112 * 112);
+            cv::Mat img3 = cv::Mat(112, 112, CV_8UC1, trans_image_data.begin() + 112 * 112 * 2);
+            std::vector<cv::Mat> img;
+            img.push_back(img3);
+            img.push_back(img2);
+            img.push_back(img1);
+            cv::Mat test_img;
+            cv::merge(img, test_img);
+            cv::imwrite("D:/project/hzx.jpg", test_img);*/
             //ncnn_face_img.substract_mean_normalize(mean_vals, norm_vals);
         }
         else {
@@ -99,9 +116,15 @@ int __stdcall GetFaceRecognitionFeature(RecognitionHandle handle,
 
         fea_dim = out.total();
         (*feature) = new float[out.total()];
+        float sum = 0;
         for (int j = 0; j<out.total(); j++)
         {
-            (*feature)[j] = out[j];
+            sum += out[j] * out[j];
+        }
+        sum = 1.0f / (sqrt(sum) + 1e-6);
+        for (int j = 0; j<out.total(); j++)
+        {
+            (*feature)[j] = out[j] * sum;
         }
     }
     catch (const std::bad_alloc &)
@@ -356,14 +379,14 @@ int __stdcall InitOLDFaceRecognition(const char *szParamName,
         g_num_threads = num_threads;
         g_light_mode = light_mode;
 
-        /*float NormPoints_128[10] = {
-            35.5f, 55.48f,
-            91.5f, 55.48f,
-            63.5f, 83.98f,
-            45.5f, 111.48f,
-            81.5f, 111.48f,
-        };*/
-        affineNorm.Initialize(112, 112, 1.0);
+        float NormPoints_128[10] = {
+            38.2946f, 51.6963f,
+            73.5318f, 51.5014f,
+            56.0252f, 71.7366f,
+            41.5493f, 92.3655f,
+            70.7299f, 92.2041f,
+        };
+        affineNorm.Initialize(112, 112, 1.0, 112, NormPoints_128);
 
         *pHandle = reinterpret_cast<RecognitionHandle>(pCaffeNet);
 

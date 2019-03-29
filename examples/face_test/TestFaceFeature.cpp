@@ -1,6 +1,8 @@
 #include "face_recognition.h"
 #include "FaceDetectEngine.hpp"
 #include "autoarray.h"
+#include "ListOperation.h"
+#include "MyString.h"
 #ifdef _WIN32
 #include "TimeCount.h"
 #endif
@@ -117,23 +119,31 @@ int main(int argc, char** argv)
         // Read Image
         //cv::Mat garyImgData = cv::imread(strImgName, CV_LOAD_IMAGE_GRAYSCALE);
 #ifdef _WIN32
-        vector<string> imgList;
+        CMyString filename = argv[3];
+        std::vector<CMyString> imgList;
+        std::vector<pair<CMyString, int>> vecClassNameSampleNum;
+        std::vector<int> vecSampleToClassIndex;
+        ReadFileList(filename, imgList, vecClassNameSampleNum, vecSampleToClassIndex);
+        /*vector<string> imgList;
         std::ifstream infile(argv[3]);
         std::string line;
         while (std::getline(infile, line)) {
             imgList.push_back(line);
         }
-        infile.close();
+        infile.close();*/
 
         std::ofstream outfile(argv[4]);
-
+        outfile << "{";
         for (int i = 0; i < imgList.size(); ++i) {
-            std::string strImgName = base_path + imgList[i];
+            std::string strImgName = base_path + imgList[i].c_str();
             cv::Mat oriImgData = cv::imread(strImgName, CV_LOAD_IMAGE_COLOR);
             SN::DetectedFaceBox face_box;
             retValue = FaceDetect_maxDetect(hDetect, oriImgData, face_box);
             if (0 != retValue)
                 continue;
+
+            if (i > 0)
+                outfile << ",";
 
             cv::Mat cvt_image;
             cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2RGB);
@@ -145,15 +155,16 @@ int main(int argc, char** argv)
                 cvt_image.data, oriImgData.cols, oriImgData.rows,
                 oriImgData.channels(), &feature, fea_dim);
 
-            outfile << imgList[i] << ": ";
-            for (int j = 0; j < fea_dim; ++j)
-                outfile << feature[j] << " ";
-            outfile << std::endl;
+            outfile << "\"" << imgList[i] << "\"" << ":[";
+            outfile << feature[0];
+            for (int j = 1; j < fea_dim; ++j)
+                outfile << "," << feature[j];
+            outfile << "]";
 
             delete[] feature;
             feature = 0;
         }
-
+        outfile << "}";
         outfile.close();
         
         // Face detection
