@@ -112,13 +112,20 @@ int __stdcall GetFaceGenderScore(GenderHandle handle,
         gender_score = out[0];
         glass_score = out[3];
         happy_score = out[7];
-        float max_score = -1.0f;
+        float emotion_vec[7];
+        float max_score = -10000.0f;
+        float min_score = 10000.0f;
         for (int c = 0; c < 7; ++c) {
+            emotion_vec[c] = out[c + 4];
             if (max_score < out[c + 4]) {
                 max_score = out[c + 4];
                 emotion = c;
-            }   
+            }  
+            if (min_score > out[c + 4]) {
+                min_score = out[c + 4];
+            }
         }
+        happy_score = (happy_score - min_score) / (max_score - min_score);
         age = 0;
         int iter = (out.total() - 12) / 2;
         for (int c = 0; c < iter; ++c)
