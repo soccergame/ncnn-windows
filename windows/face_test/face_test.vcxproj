@@ -213,7 +213,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;NOMINMAX;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)src\layer;D:\project\common\include\opencv2413;D:\project\common\include;$(SolutionDir)examples\face_detection;$(SolutionDir)examples\face_gender;$(SolutionDir)examples\face_recognition;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)src\layer;D:\project\common\include\opencv2413;D:\project\common\include\utils;$(SolutionDir)examples\face_detection;$(SolutionDir)examples\face_gender;$(SolutionDir)examples\face_recognition;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
