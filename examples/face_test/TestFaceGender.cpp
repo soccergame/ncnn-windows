@@ -9,9 +9,7 @@
 #include <string>
 #include <memory>
 #include <assert.h>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
 
 #ifndef _WIN32
 #include<unistd.h> 
@@ -117,7 +115,7 @@ int main(int argc, char** argv)
         // Read Image
         //cv::Mat garyImgData = cv::imread(strImgName, CV_LOAD_IMAGE_GRAYSCALE);
 #ifdef _WIN32
-        cv::Mat oriImgData = cv::imread(strImgName, CV_LOAD_IMAGE_COLOR);
+        cv::Mat oriImgData = cv::imread(strImgName, cv::IMREAD_COLOR);
         // Face detection
         timeCount.Start();
         SN::DetectedFaceBox face_box;

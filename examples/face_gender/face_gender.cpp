@@ -16,7 +16,7 @@
 #include "face_gender.h"
 #include "NormFaceImage.h"
 #include "autoarray.h"
-#include "Error_Code.h"
+#include "ErrorCodeDef.h"
 #include "net.h"
 
 
@@ -48,7 +48,7 @@ int __stdcall GetFaceGenderScore(GenderHandle handle,
     float &glass_score, int &emotion, float &happy_score)
 {
     if (image_data == 0 || width <= 0 || height <= 0)
-        return  INVALID_IMAGE;
+        return  INVALID_INPUT;
 
     if (1 != channel && 3 != channel)
         return INVALID_IMAGE_FORMAT;
@@ -62,7 +62,7 @@ int __stdcall GetFaceGenderScore(GenderHandle handle,
     {
         ncnn::Mat ncnn_face_img(96, 128, 3, 4u);
         if (ncnn_face_img.empty())
-            return INVALID_IMAGE;
+            return INVALID_INPUT;
 
         //count = clock();
         int size = width * height;
@@ -239,8 +239,8 @@ int __stdcall InitFaceGender(const char *szNetName,
         for (int i = 0; i < numOfData; ++i)
         {
             int tempData = pBuffer[i];
-            pBuffer[i] = hzx::ror(static_cast<unsigned int>(tempData),
-                hzx::g_shiftBits);
+            pBuffer[i] = DNHPX::ror(static_cast<unsigned int>(tempData),
+                DNHPX::g_shiftBits);
         }
 
         const int modelnumber = pBuffer[0];

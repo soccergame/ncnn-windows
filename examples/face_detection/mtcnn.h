@@ -13,7 +13,7 @@
 #include <iostream>
 #include <math.h>
 
-#include "Error_Code.h"
+#include "ErrorCodeDef.h"
 #include "AlgorithmUtils.h"
 #include "autoarray.h"
 

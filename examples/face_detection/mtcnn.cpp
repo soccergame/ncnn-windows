@@ -88,8 +88,8 @@ int MTCNN::Init(const string &model_name){
     for (int i = 0; i < numOfData; ++i)
     {
         int tempData = pBuffer[i];
-        pBuffer[i] = hzx::ror(static_cast<unsigned int>(tempData),
-            hzx::g_shiftBits);
+        pBuffer[i] = DNHPX::ror(static_cast<unsigned int>(tempData),
+            DNHPX::g_shiftBits);
     }
 
     const int modelnumber = pBuffer[0];

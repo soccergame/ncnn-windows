@@ -1,6 +1,6 @@
 ﻿#include "FaceDetectEngine.hpp"
 #include "mtcnn.h"
-#include "Error_Code.h"
+#include "ErrorCodeDef.h"
 
 #if defined( _ANDROID) || defined(_IOS) || defined(__GNUC__)
 #include <cerrno>
@@ -137,10 +137,10 @@ int __stdcall FaceDetect_maxDetect(SN::FDHANDLE handle,
     }
 	if (min_size < 20 || min_size>200)
 	{
-		return INVALID_FACE_SIZE;
+		return INVALID_FACE_RECT;
 	}
     if (image.data == NULL) {
-        return INVALID_IMAGE;
+        return INVALID_INPUT;
     }
 
     if (!g_bFaceDetectionInited)
@@ -202,10 +202,10 @@ int __stdcall FaceDetect_Detect(SN::FDHANDLE handle,
     }
     if (min_size < 20 || min_size>200)
     {
-        return INVALID_FACE_SIZE;
+        return INVALID_FACE_RECT;
     }
     if (image.data == NULL) {
-        return INVALID_IMAGE;
+        return INVALID_INPUT;
     }
 
     if (!g_bFaceDetectionInited)
