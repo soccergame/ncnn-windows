@@ -48,13 +48,13 @@ int __stdcall GetFaceGenderScore(GenderHandle handle,
     float &glass_score, int &emotion, float &happy_score)
 {
     if (image_data == 0 || width <= 0 || height <= 0)
-        return  INVALID_INPUT;
+        return  DNHPX_INVALID_INPUT;
 
     if (1 != channel && 3 != channel)
-        return INVALID_IMAGE_FORMAT;
+        return DNHPX_INVALID_IMAGE_FORMAT;
 
     if (!g_bFaceGenderInited)
-        return MODEL_NOT_INITIALIZED;
+        return DNHPX_MODEL_NOT_INITIALIZED;
 
     int nRet = 0;
     //clock_t count;
@@ -62,7 +62,7 @@ int __stdcall GetFaceGenderScore(GenderHandle handle,
     {
         ncnn::Mat ncnn_face_img(96, 128, 3, 4u);
         if (ncnn_face_img.empty())
-            return INVALID_INPUT;
+            return DNHPX_INVALID_INPUT;
 
         //count = clock();
         int size = width * height;
@@ -196,7 +196,7 @@ int __stdcall InitFaceGender(const char *szNetName,
     if (g_bFaceGenderInited)
     {
         ++g_FaceGenderInitCount;
-        return OK;
+        return DNHPX_OK;
     }
 
 	int retValue = 0;
@@ -308,7 +308,7 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
     if (g_bFaceGenderInited)
     {
         ++g_FaceGenderInitCount;
-        return OK;
+        return DNHPX_OK;
     }
 
     int retValue = 0;

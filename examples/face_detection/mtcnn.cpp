@@ -80,7 +80,7 @@ int MTCNN::Init(const string &model_name){
     fileModel.close();
 
     if (dataSize <= 0)
-        return MODEL_NOT_INITIALIZED;
+        return DNHPX_MODEL_NOT_INITIALIZED;
 
     int *pBuffer = reinterpret_cast<int *>(encryptedData.begin());
     // encrypt data by shift left		
@@ -128,10 +128,10 @@ int MTCNN::Init(const string &model_name){
         Onet.load_model(m_OnetWeight.begin());
     }
     else
-        return MODEL_NOT_INITIALIZED;
+        return DNHPX_MODEL_NOT_INITIALIZED;
 
 #endif
-    return OK;
+    return DNHPX_OK;
 }
 
 

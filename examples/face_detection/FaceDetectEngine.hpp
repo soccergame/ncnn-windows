@@ -7,7 +7,7 @@
 
 #include <opencv2/core/core.hpp>
 
-namespace SN {
+namespace DNHPX {
 #ifndef FACE_DETECTION_HANDLE
 #define FACE_DETECTION_HANDLE
     typedef  void*  FDHANDLE;
@@ -35,21 +35,21 @@ extern "C" {
     int __stdcall FaceDetect_setLibPath(const char *model_path);
 
     // Initialized
-    int __stdcall FaceDetect_init(SN::FDHANDLE *pHandle, 
+    int __stdcall FaceDetect_init(DNHPX::FDHANDLE *pHandle,
         const char *model_name = NULL);
 
     // Detect max face
-    int __stdcall FaceDetect_maxDetect(SN::FDHANDLE handle, 
-        const cv::Mat &image, SN::DetectedFaceBox &face_box, 
+    int __stdcall FaceDetect_maxDetect(DNHPX::FDHANDLE handle,
+        const cv::Mat &image, DNHPX::DetectedFaceBox &face_box,
         const float min_size = 40, const int num_threads = 4);
 
     // Detect all face
-    int __stdcall FaceDetect_Detect(SN::FDHANDLE handle,
-        const cv::Mat &image, std::vector<SN::DetectedFaceBox> &face_box,
+    int __stdcall FaceDetect_Detect(DNHPX::FDHANDLE handle,
+        const cv::Mat &image, std::vector<DNHPX::DetectedFaceBox> &face_box,
         const float min_size = 40, const int num_threads = 4);
 
     // Release
-    int __stdcall FaceDetect_release(SN::FDHANDLE handle);
+    int __stdcall FaceDetect_release(DNHPX::FDHANDLE handle);
 
 #ifdef __cplusplus
 }

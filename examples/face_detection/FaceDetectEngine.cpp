@@ -7,6 +7,7 @@
 #include <cstddef>
 #define _countof(x) (sizeof(x)/sizeof(x[0]))
 #define strcpy_s(x,y,z) strncpy((x), (z), (y))
+#define _MAX_PATH 260
 #else
 #include "windows.h"
 #endif
@@ -16,14 +17,13 @@
 
 #define FACE_DETECTION_MODEL_NAME "libsnfd.so"
 
-char g_szFaceDetectionDLLPath[_MAX_PATH] = { 0 };
-
 namespace {
     typedef struct _face_engine
     {
         MTCNN *pFaceDetect;
     }FaceDetectEngineData;
 
+    char g_szFaceDetectionDLLPath[_MAX_PATH] = { 0 };
     volatile bool g_bFaceDetectionInited = false;
     volatile int g_FaceDetectionInitCount = 0;	
 }
@@ -31,10 +31,10 @@ namespace {
 int __stdcall FaceDetect_setLibPath(const char *model_path)
 {
     if (model_path == NULL)
-        return INVALID_INPUT;
+        return DNHPX_INVALID_INPUT;
 
     if (g_bFaceDetectionInited)
-        return OK;
+        return DNHPX_OK;
 
 #ifdef _WIN32
     strcpy_s(g_szFaceDetectionDLLPath, _MAX_PATH, model_path);
@@ -57,7 +57,7 @@ int __stdcall FaceDetect_setLibPath(const char *model_path)
     return 0;
 }
 
-int __stdcall FaceDetect_init(SN::FDHANDLE *pHandle, const char *model_name)
+int __stdcall FaceDetect_init(DNHPX::FDHANDLE *pHandle, const char *model_name)
 {
     if (pHandle == NULL)
         return -1;
@@ -69,10 +69,10 @@ int __stdcall FaceDetect_init(SN::FDHANDLE *pHandle, const char *model_name)
     if (g_bFaceDetectionInited)
     {
         ++g_FaceDetectionInitCount;
-        return OK;
+        return DNHPX_OK;
     }
 
-	int res = OK;
+	int res = DNHPX_OK;
 
 #ifndef _WIN32	
     if (strlen(g_szFaceDetectionDLLPath) == 0)
@@ -89,11 +89,11 @@ int __stdcall FaceDetect_init(SN::FDHANDLE *pHandle, const char *model_name)
             strDllPath += FACE_DETECTION_MODEL_NAME;
 
         FaceDetectEngineData *pEngineData = new FaceDetectEngineData;
-        *pHandle = (SN::FDHANDLE)pEngineData;
+        *pHandle = (DNHPX::FDHANDLE)pEngineData;
 #ifndef OLD_NCNN
         pEngineData->pFaceDetect = new MTCNN;
         res = pEngineData->pFaceDetect->Init(strDllPath);
-        if (OK != res) {
+        if (DNHPX_OK != res) {
             delete pEngineData;
             throw res;
         }
@@ -109,7 +109,7 @@ int __stdcall FaceDetect_init(SN::FDHANDLE *pHandle, const char *model_name)
         g_bFaceDetectionInited = true;
         ++g_FaceDetectionInitCount;
 
-        *pHandle = reinterpret_cast<SN::FDHANDLE>(pEngineData);
+        *pHandle = reinterpret_cast<DNHPX::FDHANDLE>(pEngineData);
     }
     catch (const std::bad_alloc &)
     {
@@ -127,26 +127,26 @@ int __stdcall FaceDetect_init(SN::FDHANDLE *pHandle, const char *model_name)
     return res;
 }
 
-int __stdcall FaceDetect_maxDetect(SN::FDHANDLE handle, 
-    const cv::Mat &image, SN::DetectedFaceBox &face_box, 
+int __stdcall FaceDetect_maxDetect(DNHPX::FDHANDLE handle,
+    const cv::Mat &image, DNHPX::DetectedFaceBox &face_box,
     const float min_size, const int num_threads){
     
     if(NULL == handle){
         //LOG(ERROR) << "handle == NULL!" << endl;
-        return INVALID_INPUT;
+        return DNHPX_INVALID_INPUT;
     }
 	if (min_size < 20 || min_size>200)
 	{
-		return INVALID_FACE_RECT;
+		return DNHPX_INVALID_FACE_RECT;
 	}
     if (image.data == NULL) {
-        return INVALID_INPUT;
+        return DNHPX_INVALID_INPUT;
     }
 
     if (!g_bFaceDetectionInited)
-        return MODEL_NOT_INITIALIZED;
+        return DNHPX_MODEL_NOT_INITIALIZED;
 
-    int res = OK;
+    int res = DNHPX_OK;
 
     try {
         FaceDetectEngineData *pEngineData = 
@@ -163,7 +163,7 @@ int __stdcall FaceDetect_maxDetect(SN::FDHANDLE handle,
         if (num_box <1)
         {
             //LOG(ERROR) << "detect no face!" << endl;
-            return NO_FACE;
+            return DNHPX_NO_FACE;
         }
         face_box.box[0] = (finalBbox[0].x1 < 0) ? 0 : finalBbox[0].x1;
         face_box.box[1] = (finalBbox[0].y1 < 0) ? 0 : finalBbox[0].y1;
@@ -193,25 +193,25 @@ int __stdcall FaceDetect_maxDetect(SN::FDHANDLE handle,
     return res;
 }
 
-int __stdcall FaceDetect_Detect(SN::FDHANDLE handle,
-    const cv::Mat &image, std::vector<SN::DetectedFaceBox> &face_box,
+int __stdcall FaceDetect_Detect(DNHPX::FDHANDLE handle,
+    const cv::Mat &image, std::vector<DNHPX::DetectedFaceBox> &face_box,
     const float min_size, const int num_threads) {
     if (NULL == handle) {
         //LOG(ERROR) << "handle == NULL!" << endl;
-        return INVALID_INPUT;
+        return DNHPX_INVALID_INPUT;
     }
     if (min_size < 20 || min_size>200)
     {
-        return INVALID_FACE_RECT;
+        return DNHPX_INVALID_FACE_RECT;
     }
     if (image.data == NULL) {
-        return INVALID_INPUT;
+        return DNHPX_INVALID_INPUT;
     }
 
     if (!g_bFaceDetectionInited)
-        return MODEL_NOT_INITIALIZED;
+        return DNHPX_MODEL_NOT_INITIALIZED;
 
-    int res = OK;
+    int res = DNHPX_OK;
 
     try {
         FaceDetectEngineData *pEngineData =
@@ -229,7 +229,7 @@ int __stdcall FaceDetect_Detect(SN::FDHANDLE handle,
         if (num_box <1)
         {
             //LOG(ERROR) << "detect no face!" << endl;
-            return NO_FACE;
+            return DNHPX_NO_FACE;
         }
         face_box.resize(num_box);
         for (int j = 0; j < num_box; ++j) {
@@ -263,7 +263,7 @@ int __stdcall FaceDetect_Detect(SN::FDHANDLE handle,
     return res;
 }
 
-int __stdcall FaceDetect_release(SN::FDHANDLE handle)
+int __stdcall FaceDetect_release(DNHPX::FDHANDLE handle)
 {
     --g_FaceDetectionInitCount;
     if (g_FaceDetectionInitCount == 0)
@@ -282,7 +282,7 @@ int __stdcall FaceDetect_release(SN::FDHANDLE handle)
         }
     }
 
-	return OK;
+	return DNHPX_OK;
 }
 
 

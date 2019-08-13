@@ -26,7 +26,7 @@ int _tmain(int argc, TCHAR *argv[])
     try
     {
         TCLAP::CmdLine cmd(TCLAP_TEXT("Generate or extract caffe models.\n")  \
-            TCLAP_TEXT("Copyright: Beijing SN Corp. Ltd.")	\
+            TCLAP_TEXT("Copyright: He Zhixiang.")	\
             TCLAP_TEXT("Author: He Zhixiang")	\
             TCLAP_TEXT("Data: Nov. 5, 2018"), TCLAP_TEXT(' '), TCLAP_TEXT("2.0"));
 
