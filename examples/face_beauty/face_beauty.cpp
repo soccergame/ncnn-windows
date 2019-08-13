@@ -16,7 +16,7 @@
 #include "face_beauty.h"
 #include "NormFaceImage.h"
 #include "autoarray.h"
-#include "Error_Code.h"
+#include "ErrorCodeDef.h"
 #include "net.h"
 
 
@@ -33,7 +33,7 @@ namespace
     char g_szDeepFeatSDKPath[_MAX_PATH] = { 0 };
     int g_num_threads = 1;
     bool g_light_mode = true;
-    hzx::CNormImageSimilarity affineNorm;
+    DNHPX::CNormImageSimilarity affineNorm;
     AutoArray<unsigned char> pWeightBuf;
 }
 
@@ -42,7 +42,7 @@ int __stdcall GetFaceBeautyScore(BeautyHandle handle,
     int height, int channel, float &beauty_score)
 {
     if (image_data == 0 || width <= 0 || height <= 0)
-        return  INVALID_IMAGE;
+        return  INVALID_INPUT;
 
     if (1 != channel && 3 != channel)
         return INVALID_IMAGE_FORMAT;
@@ -53,7 +53,7 @@ int __stdcall GetFaceBeautyScore(BeautyHandle handle,
     {
         ncnn::Mat ncnn_face_img(256, 256, 3, 4u);
         if (ncnn_face_img.empty())
-            return INVALID_IMAGE;
+            return INVALID_IMAGE_FORMAT;
 
         int size = width * height;
         if (channel == 3) {
@@ -175,8 +175,8 @@ int __stdcall InitFaceBeauty(const char *szNetName,
         for (int i = 0; i < numOfData; ++i)
         {
             int tempData = pBuffer[i];
-            pBuffer[i] = hzx::ror(static_cast<unsigned int>(tempData),
-                hzx::g_shiftBits);
+            pBuffer[i] = DNHPX::ror(static_cast<unsigned int>(tempData),
+                DNHPX::g_shiftBits);
         }
 
         const int modelnumber = pBuffer[0];
@@ -214,7 +214,7 @@ int __stdcall InitFaceBeauty(const char *szNetName,
             1.0f,
         };
 
-        affineNorm.Initialize(256, 256, 1.0, 300, NormPoints, Weights, 5);
+        affineNorm.Initialize(256, 256, 1.0, 300, NormPoints);
 
 		*pHandle = reinterpret_cast<BeautyHandle>(pCaffeNet);
 #endif
@@ -290,7 +290,7 @@ int __stdcall InitOLDFaceBeauty(const char *szParamName,
             1.0f,
         };
 
-        affineNorm.Initialize(256, 256, 1.0, 300, NormPoints, Weights, 5);
+        affineNorm.Initialize(256, 256, 1.0, 300, NormPoints);
 
         *pHandle = reinterpret_cast<BeautyHandle>(pCaffeNet);
     }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29201.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libncnn", "windows\libncnn\libncnn.vcxproj", "{5DE02493-E81C-4820-8A1C-79E60BA0BDA1}"
 EndProject
@@ -38,6 +38,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "face_test", "windows\face_t
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "face_recognition", "windows\face_recognition\face_recognition.vcxproj", "{4611FB8D-8958-4D31-BED7-8B4D743DC62A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "face_alignment", "windows\face_alignment\face_alignment.vcxproj", "{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -145,8 +147,23 @@ Global
 		{4611FB8D-8958-4D31-BED7-8B4D743DC62A}.StaticRelease|x64.Build.0 = StaticRelease|x64
 		{4611FB8D-8958-4D31-BED7-8B4D743DC62A}.StaticRelease|x86.ActiveCfg = StaticRelease|Win32
 		{4611FB8D-8958-4D31-BED7-8B4D743DC62A}.StaticRelease|x86.Build.0 = StaticRelease|Win32
+		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.Debug|x64.ActiveCfg = Debug|x64
+		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.Debug|x64.Build.0 = Debug|x64
+		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.Debug|x86.ActiveCfg = Debug|Win32
+		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.Debug|x86.Build.0 = Debug|Win32
+		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.Release|x64.ActiveCfg = Release|x64
+		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.Release|x64.Build.0 = Release|x64
+		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.Release|x86.ActiveCfg = Release|Win32
+		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.Release|x86.Build.0 = Release|Win32
+		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.StaticRelease|x64.ActiveCfg = StaticRelease|x64
+		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.StaticRelease|x64.Build.0 = StaticRelease|x64
+		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.StaticRelease|x86.ActiveCfg = StaticRelease|Win32
+		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.StaticRelease|x86.Build.0 = StaticRelease|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4127B6F2-7554-4134-A986-B39AA413B958}
 	EndGlobalSection
 EndGlobal

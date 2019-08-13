@@ -33,7 +33,7 @@ namespace
     char g_szDeepFeatSDKPath[_MAX_PATH] = { 0 };
     int g_num_threads = 1;
     bool g_light_mode = true;
-    hzx::CNormImage3pt affineNorm;
+    DNHPX::CNormImage3pt affineNorm;
     AutoArray<unsigned char> pWeightBuf;
     const float mean_vals[3] = { 127.5, 127.5, 127.5 };
     const float norm_vals[3] = { 0.0078125, 0.0078125, 0.0078125 };

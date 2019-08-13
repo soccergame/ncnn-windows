@@ -16,7 +16,7 @@
 #include "face_recognition.h"
 #include "NormFaceImage.h"
 #include "autoarray.h"
-#include "Error_Code.h"
+#include "ErrorCodeDef.h"
 #include "net.h"
 
 #include <opencv2/core/core.hpp>
@@ -37,7 +37,7 @@ namespace
     char g_szDeepFeatSDKPath[_MAX_PATH] = { 0 };
     int g_num_threads = 1;
     bool g_light_mode = true;
-    hzx::CNormImageSimilarity affineNorm;
+    DNHPX::CNormImageSimilarity affineNorm;
     AutoArray<unsigned char> pWeightBuf;
     const float mean_vals[3] = { 127.5, 127.5, 127.5 };
     const float norm_vals[3] = { 0.0078125, 0.0078125, 0.0078125 };
@@ -51,7 +51,7 @@ int __stdcall GetFaceRecognitionFeature(RecognitionHandle handle,
     int height, int channel, float **feature, int &fea_dim)
 {
     if (image_data == 0 || width <= 0 || height <= 0)
-        return  INVALID_IMAGE;
+        return  INVALID_INPUT;
 
     if (1 != channel && 3 != channel)
         return INVALID_IMAGE_FORMAT;
@@ -65,7 +65,7 @@ int __stdcall GetFaceRecognitionFeature(RecognitionHandle handle,
     {
         ncnn::Mat ncnn_face_img(112, 112, 3, 4u);
         if (ncnn_face_img.empty())
-            return INVALID_IMAGE;
+            return INVALID_INPUT;
 
         //count = clock();
         int size = width * height;
@@ -147,7 +147,7 @@ int __stdcall GetFaceRecognitionFeatureRaw(RecognitionHandle handle,
     const unsigned char *norm_data, float **feature, int &fea_dim)
 {
     if (norm_data == 0)
-        return  INVALID_IMAGE;
+        return  INVALID_INPUT;
 
     if (!g_bFaceRecognitionInited)
         return MODEL_NOT_INITIALIZED;
@@ -159,7 +159,7 @@ int __stdcall GetFaceRecognitionFeatureRaw(RecognitionHandle handle,
         ncnn::Mat ncnn_face_img = ncnn::Mat::from_pixels(
             norm_data, ncnn::Mat::PIXEL_BGR2RGB, 112, 112);
         if (ncnn_face_img.empty())
-            return INVALID_IMAGE;
+            return INVALID_INPUT;
 
         ncnn::Net *pCaffeNet = reinterpret_cast<ncnn::Net *>(handle);
         ncnn::Extractor ex = pCaffeNet->create_extractor();
@@ -277,8 +277,8 @@ int __stdcall InitFaceRecognition(const char *szNetName,
         for (int i = 0; i < numOfData; ++i)
         {
             int tempData = pBuffer[i];
-            pBuffer[i] = hzx::ror(static_cast<unsigned int>(tempData),
-                hzx::g_shiftBits);
+            pBuffer[i] = DNHPX::ror(static_cast<unsigned int>(tempData),
+                DNHPX::g_shiftBits);
         }
 
         const int modelnumber = pBuffer[0];
