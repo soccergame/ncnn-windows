@@ -1,5 +1,5 @@
 #include "face_gender.h"
-#include "FaceDetectEngine.hpp"
+#include "DNHPXFaceDetect.h"
 #include "DNHPXFaceAlignment.h"
 #include "autoarray.h"
 #include "TimeCount.h"
@@ -97,9 +97,9 @@ int main(int argc, char** argv)
             throw retValue;
         }
 
-        retValue = FaceDetect_setLibPath(pModulePath);
-        DNHPX::FDHANDLE hDetect;
-        retValue |= FaceDetect_init(&hDetect);
+        retValue = DNHPXSetFaceDetectLibPath(pModulePath);
+        DNHPXFaceDetHandle hDetect;
+        retValue |= DNHPXInitFaceDetect(&hDetect);
         if (DNHPX_OK != retValue) {
             std::cout << "Detection error Code: " << retValue << std::endl;
             DNHPXUninitFaceAlignment();
@@ -112,8 +112,8 @@ int main(int argc, char** argv)
         cv::Mat oriImgData = cv::imread(strImgName, cv::IMREAD_COLOR);
         // Face detection
         timeCount.Start();
-        DNHPX::DetectedFaceBox face_box;
-        retValue = FaceDetect_maxDetect(hDetect, oriImgData, face_box);
+        DNHPXFaceRect face_box;
+        retValue = DNHPXMaxFaceDetect(hDetect, oriImgData, face_box);
         if (0 != retValue)
             throw retValue;
 
@@ -123,18 +123,9 @@ int main(int argc, char** argv)
         cv::Mat cvt_image;
         cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2GRAY);
 
-        DNHPXFaceRect det_face;
-        det_face.face.left = face_box.box[0];//dets[0].left() / 2;
-        det_face.face.top = face_box.box[1];// dets[0].top() / 2;
-        det_face.face.right = face_box.box[2];// dets[0].right() / 2;
-        det_face.face.bottom = face_box.box[3];// dets[0].bottom() / 2;
-        det_face.confidence = 100;
-
         DNHPXEyePointF eye_points;
-        eye_points.left_eye.x = face_box.keypoints[0];
-        eye_points.left_eye.y = face_box.keypoints[1];
-        eye_points.right_eye.x = face_box.keypoints[2];
-        eye_points.right_eye.y = face_box.keypoints[3];
+        eye_points.left_eye = face_box.key_points[0];
+        eye_points.right_eye = face_box.key_points[1];
         eye_points.confidence = 100;
         DNHPXPointF key_points[88];
 
@@ -169,7 +160,7 @@ int main(int argc, char** argv)
             cout << "Can not read images!" << endl;
         
         DNHPXUninitFaceAlignment();
-        FaceDetect_release(hDetect);
+        DNHPXUninitFaceDetect(hDetect);
     }
     catch (const std::bad_alloc &)
 	{

@@ -13,18 +13,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\examples\face_detection\FaceDetectEngine.hpp">
+    <ClInclude Include="..\..\examples\face_detection\mtcnn.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\examples\face_detection\mtcnn.h">
+    <ClInclude Include="..\..\examples\face_detection\DNHPXFaceDetect.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\examples\face_detection\FaceDetectEngine.cpp">
+    <ClCompile Include="..\..\examples\face_detection\mtcnn.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\examples\face_detection\mtcnn.cpp">
+    <ClCompile Include="..\..\examples\face_detection\DNHPXFaceDetect.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
