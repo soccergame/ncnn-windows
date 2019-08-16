@@ -13,9 +13,9 @@
 #include <iostream>
 #include <math.h>
 
-#include "ErrorCodeDef.h"
-#include "AlgorithmUtils.h"
-#include "autoarray.h"
+#include "dnhpx_error_code.h"
+#include "dnhpx_algorithm_utils.h"
+#include "dnhpx_smart_ptr.h"
 
 using namespace std;
 //using namespace cv;
@@ -78,9 +78,9 @@ private:
 	int count = 1;
 	int num_threads = 4;
 
-    AutoArray<unsigned char> m_PnetWeight;
-    AutoArray<unsigned char> m_RnetWeight;
-    AutoArray<unsigned char> m_OnetWeight;
+    dnhpx::smart_ptr<unsigned char> m_PnetWeight;
+    dnhpx::smart_ptr<unsigned char> m_RnetWeight;
+    dnhpx::smart_ptr<unsigned char> m_OnetWeight;
 };
 
 

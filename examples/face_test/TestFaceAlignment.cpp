@@ -1,8 +1,8 @@
-#include "face_gender.h"
+//#include "face_gender.h"
 #include "DNHPXFaceDetect.h"
 #include "DNHPXFaceAlignment.h"
-#include "autoarray.h"
-#include "TimeCount.h"
+//#include "dnhpx_auto_array.h"
+#include "dnhpx_time_count.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -16,7 +16,7 @@
 #endif
 
 #ifndef _WIN32
-void readFileList(const char* basePath, vector<string>& imgFiles)
+void readFileList(const char* basePath, std::vector<std::string>& imgFiles)
 {
     DIR *dir;
     struct dirent *ptr;
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
     int retValue = 0;
     float maxR = 0;
     int label = 0;
-    CTimeCount timeCount;
+    dnhpx::CTimeCount timeCount;
     
     try
     {
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
             std::string result_name;
             size_t found = image_name.rfind(".");
             if (found != std::string::npos)
-                result_name = image_name.replace(found, string::npos, "_88.jpg");
+                result_name = image_name.replace(found, std::string::npos, "_88.jpg");
             else
                 result_name = image_name + "_88.jpg";
 
@@ -157,7 +157,7 @@ int main(int argc, char** argv)
             cv::imwrite(result_name, result_img);
         }
         else
-            cout << "Can not read images!" << endl;
+            std::cout << "Can not read images!" << std::endl;
         
         DNHPXUninitFaceAlignment();
         DNHPXUninitFaceDetect(hDetect);

@@ -33,8 +33,8 @@ namespace
     char g_szDeepFeatSDKPath[_MAX_PATH] = { 0 };
     int g_num_threads = 1;
     bool g_light_mode = true;
-    DNHPX::CNormImageSimilarity affineNorm;
-    AutoArray<unsigned char> pWeightBuf;
+    dnhpx::CNormImageSimilarity affineNorm;
+    dnhpx::AutoArray<unsigned char> pWeightBuf;
 }
 
 int __stdcall GetFaceBeautyScore(BeautyHandle handle, 
@@ -175,8 +175,8 @@ int __stdcall InitFaceBeauty(const char *szNetName,
         for (int i = 0; i < numOfData; ++i)
         {
             int tempData = pBuffer[i];
-            pBuffer[i] = DNHPX::ror(static_cast<unsigned int>(tempData),
-                DNHPX::g_shiftBits);
+            pBuffer[i] = dnhpx::ror(static_cast<unsigned int>(tempData),
+                dnhpx::g_shiftBits);
         }
 
         const int modelnumber = pBuffer[0];

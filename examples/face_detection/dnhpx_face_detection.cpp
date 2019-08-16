@@ -1,6 +1,6 @@
-﻿#include "DNHPXFaceDetect.h"
+﻿#include "dnhpx_face_detection.h"
 #include "mtcnn.h"
-#include "ErrorCodeDef.h"
+#include "dnhpx_error_code.h"
 
 #if defined( _ANDROID) || defined(_IOS) || defined(__GNUC__)
 #include <cerrno>

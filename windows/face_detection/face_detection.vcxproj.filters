@@ -16,7 +16,7 @@
     <ClInclude Include="..\..\examples\face_detection\mtcnn.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\examples\face_detection\DNHPXFaceDetect.h">
+    <ClInclude Include="..\..\examples\face_detection\dnhpx_face_detection.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -24,7 +24,7 @@
     <ClCompile Include="..\..\examples\face_detection\mtcnn.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\examples\face_detection\DNHPXFaceDetect.cpp">
+    <ClCompile Include="..\..\examples\face_detection\dnhpx_face_detection.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

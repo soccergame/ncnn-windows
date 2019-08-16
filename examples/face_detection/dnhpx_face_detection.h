@@ -6,7 +6,7 @@
 #endif
 
 #include <opencv2/core/core.hpp>
-#include "DNHPXUtility.h"
+#include "dnhpx_utility.h"
 
 #ifdef __cplusplus
 extern "C" {

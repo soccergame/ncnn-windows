@@ -27,11 +27,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\examples\face_detection\DNHPXFaceDetect.h" />
+    <ClInclude Include="..\..\examples\face_detection\dnhpx_face_detection.h" />
     <ClInclude Include="..\..\examples\face_detection\mtcnn.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\examples\face_detection\DNHPXFaceDetect.cpp" />
+    <ClCompile Include="..\..\examples\face_detection\dnhpx_face_detection.cpp" />
     <ClCompile Include="..\..\examples\face_detection\mtcnn.cpp" />
   </ItemGroup>
   <ItemGroup>
