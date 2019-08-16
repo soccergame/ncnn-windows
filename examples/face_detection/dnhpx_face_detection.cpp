@@ -1,6 +1,7 @@
 ﻿#include "dnhpx_face_detection.h"
 #include "mtcnn.h"
 #include "dnhpx_error_code.h"
+#include "opencv2/imgproc.hpp"
 
 #if defined( _ANDROID) || defined(_IOS) || defined(__GNUC__)
 #include <cerrno>
@@ -20,7 +21,7 @@
 namespace {
     typedef struct _face_engine
     {
-        MTCNN *pFaceDetect;
+        mtcnn::CFaceDetection *pFaceDetect;
     }FaceDetectEngineData;
 
     char g_szFaceDetectionDLLPath[_MAX_PATH] = { 0 };
@@ -98,7 +99,7 @@ int __stdcall DNHPXInitFaceDetect(DNHPXFaceDetHandle* pHandle, const char *model
             throw res;
         }
 #else
-        pEngineData->pFaceDetect = new MTCNN(g_szFaceDetectionDLLPath);
+        pEngineData->pFaceDetect = new mtcnn::CFaceDetection(g_szFaceDetectionDLLPath);
         //res = pEngineData->pFaceDetect->Init(strDllPath);
         if (!pEngineData->pFaceDetect) {
             delete pEngineData;
@@ -156,7 +157,7 @@ int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat &image
 
         ncnn::Mat ncnn_img = ncnn::Mat::from_pixels(image.data, ncnn::Mat::PIXEL_BGR2RGB, image.cols, image.rows);
         //mtcnn face detection
-        std::vector<Bbox> finalBbox;
+        std::vector<mtcnn::Bbox> finalBbox;
         pEngineData->pFaceDetect->detectMaxFace(ncnn_img, finalBbox);
         const int num_box = finalBbox.size();
         if (num_box <1)
@@ -220,7 +221,7 @@ int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat& image,
 
         ncnn::Mat ncnn_img = ncnn::Mat::from_pixels(image.data, ncnn::Mat::PIXEL_BGR2RGB, image.cols, image.rows);
         //mtcnn face detection
-        std::vector<Bbox> finalBbox;
+        std::vector<mtcnn::Bbox> finalBbox;
         pEngineData->pFaceDetect->detect(ncnn_img, finalBbox);
         const int num_box = finalBbox.size();
         
@@ -283,4 +284,66 @@ int __stdcall DNHPXUninitFaceDetect(DNHPXFaceDetHandle handle)
 	return DNHPX_OK;
 }
 
+// 版本1.0，暂时不考虑人脸的位置，而是对全图进行滤波
+int __stdcall DNHPXFaceBuffering(const cv::Mat& input_image,
+    std::vector<DNHPXFaceRect>& face_box, cv::Mat& output_image, 
+    dnhpx::FaceBufferingParam param)
+{
+    if (input_image.data == NULL) {
+        return DNHPX_INVALID_INPUT;
+    }
 
+    if (0 == face_box.size()) {
+        return DNHPX_NO_FACE;
+    }
+
+    int res = DNHPX_OK;
+
+    try {
+        if (true == param.use_filter_only) {
+            cv::bilateralFilter(input_image, output_image, param.radius, param.sigma_color,
+                param.sigma_space);
+        }
+        else {
+            // 1、进行双边滤波（也可以使用表面滤波，但是opencv没有现成的函数），
+            //    我自己定义的函数速度上可能存在一些问题，还需要改进，准备2.0放入
+            cv::Mat high_pass;
+            cv::bilateralFilter(input_image, high_pass, param.radius, param.sigma_color,
+                param.sigma_space);
+
+            // 2、提取细节边缘
+            high_pass = high_pass - input_image;
+            high_pass = high_pass + cv::Scalar_<unsigned char>(param.white);
+
+            // 3、高斯滤波，消除噪点
+            cv::GaussianBlur(high_pass, high_pass,
+                cv::Size(param.gaussian_ksize, param.gaussian_ksize),
+                0);
+
+            // 4、将图层进行叠加
+            cv::Mat input_float_image, high_pass_float;
+            high_pass.convertTo(high_pass_float, CV_32F);
+            input_image.convertTo(input_float_image, CV_32F);
+            input_float_image = (input_float_image * (1.0f - param.opacity) +
+                (input_float_image + 2.0f * high_pass_float - 256.0f) * param.opacity);
+
+            //
+            input_float_image.convertTo(output_image, CV_8U);
+        }
+        
+    }
+    catch (const std::bad_alloc&)
+    {
+        res = DNHPX_MEMORY_ALLOC_ERROR;
+    }
+    catch (const int& errCode)
+    {
+        res = errCode;
+    }
+    catch (...)
+    {
+        res = DNHPX_GENERIC_ERROR;
+    }
+
+    return res;
+}

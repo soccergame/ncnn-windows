@@ -1,6 +1,6 @@
 //#include "face_gender.h"
-#include "DNHPXFaceDetect.h"
-#include "DNHPXFaceAlignment.h"
+#include "dnhpx_face_detection.h"
+#include "dnhpx_face_alignment.h"
 //#include "dnhpx_auto_array.h"
 #include "dnhpx_time_count.h"
 #include <fstream>

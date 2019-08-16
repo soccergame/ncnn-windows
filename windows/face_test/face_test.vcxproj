@@ -154,7 +154,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Build\$(Platform)\$(Configuration)\;D:\project\common\libs\opencv411\vc16\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>FaceDetectEngineD.lib;face_recognitionD.lib;face_genderD.lib;face_alignmentD.lib;opencv_world411d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>face_detectionD.lib;face_recognitionD.lib;face_genderD.lib;face_alignmentD.lib;opencv_world411d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <ForceFileOutput>MultiplyDefinedSymbolOnly</ForceFileOutput>
       <ModuleDefinitionFile>

@@ -9,14 +9,14 @@
 #include <fstream>
 #include "mtcnn.h"
 
-bool cmpScore(Bbox lsh, Bbox rsh) {
+bool cmpScore(mtcnn::Bbox lsh, mtcnn::Bbox rsh) {
 	if (lsh.score < rsh.score)
 		return true;
 	else
 		return false;
 }
 
-bool cmpArea(Bbox lsh, Bbox rsh) {
+bool cmpArea(mtcnn::Bbox lsh, mtcnn::Bbox rsh) {
     if (lsh.area < rsh.area)
         return false;
     else
@@ -25,10 +25,10 @@ bool cmpArea(Bbox lsh, Bbox rsh) {
 
 
 //MTCNN::MTCNN(){}
-MTCNN::MTCNN() {
+mtcnn::CFaceDetection::CFaceDetection() {
 }
 
-MTCNN::MTCNN(const string &model_path) {
+mtcnn::CFaceDetection::CFaceDetection(const string &model_path) {
 
     std::vector<std::string> param_files = {
         model_path + "/det1.param",
@@ -50,7 +50,7 @@ MTCNN::MTCNN(const string &model_path) {
     Onet.load_model(bin_files[2].data());
 }
 
-MTCNN::MTCNN(const std::vector<std::string> param_files, const std::vector<std::string> bin_files) {
+mtcnn::CFaceDetection::CFaceDetection(const std::vector<std::string> param_files, const std::vector<std::string> bin_files) {
     Pnet.load_param(param_files[0].data());
     Pnet.load_model(bin_files[0].data());
     Rnet.load_param(param_files[1].data());
@@ -59,7 +59,7 @@ MTCNN::MTCNN(const std::vector<std::string> param_files, const std::vector<std::
     Onet.load_model(bin_files[2].data());
 }
 
-int MTCNN::Init(const string &model_name){
+int mtcnn::CFaceDetection::Init(const string &model_name){
 #ifndef OLD_NCNN
     std::string strDllPath = model_name;
 
@@ -135,26 +135,26 @@ int MTCNN::Init(const string &model_name){
 }
 
 
-MTCNN::~MTCNN(){
+mtcnn::CFaceDetection::~CFaceDetection(){
     Pnet.clear();
     Rnet.clear();
     Onet.clear();
 }
 
-void MTCNN::SetMinFace(int minSize){
+void mtcnn::CFaceDetection::SetMinFace(int minSize){
 	minsize = minSize;
 }
 
-void MTCNN::SetNumThreads(int numThreads){
+void mtcnn::CFaceDetection::SetNumThreads(int numThreads){
     num_threads = numThreads;
 }
 
-void MTCNN::SetTimeCount(int timeCount) {
+void mtcnn::CFaceDetection::SetTimeCount(int timeCount) {
     count = timeCount;
 }
 
 
-void MTCNN::generateBbox(ncnn::Mat score, ncnn::Mat location, std::vector<Bbox>& boundingBox_, float scale){
+void mtcnn::CFaceDetection::generateBbox(ncnn::Mat score, ncnn::Mat location, std::vector<Bbox>& boundingBox_, float scale){
     const int stride = 2;
     const int cellsize = 12;
     //score p
@@ -184,7 +184,7 @@ void MTCNN::generateBbox(ncnn::Mat score, ncnn::Mat location, std::vector<Bbox>&
 }
 
 
-void MTCNN::nmsTwoBoxs(vector<Bbox>& boundingBox_, vector<Bbox>& previousBox_, const float overlap_threshold, string modelname)
+void mtcnn::CFaceDetection::nmsTwoBoxs(vector<Bbox>& boundingBox_, vector<Bbox>& previousBox_, const float overlap_threshold, string modelname)
 {
     if (boundingBox_.empty()) {
         return;
@@ -226,7 +226,7 @@ void MTCNN::nmsTwoBoxs(vector<Bbox>& boundingBox_, vector<Bbox>& previousBox_, c
     //std::cout << boundingBox_.size() << std::endl;
 }
 
-void MTCNN::nms(std::vector<Bbox> &boundingBox_, const float overlap_threshold, string modelname){
+void mtcnn::CFaceDetection::nms(std::vector<Bbox> &boundingBox_, const float overlap_threshold, string modelname){
     if(boundingBox_.empty()){
         return;
     }
@@ -280,7 +280,7 @@ void MTCNN::nms(std::vector<Bbox> &boundingBox_, const float overlap_threshold, 
     }
     boundingBox_ = tmp_;
 }
-void MTCNN::refine(vector<Bbox> &vecBbox, const int &height, const int &width, bool square){
+void mtcnn::CFaceDetection::refine(vector<Bbox> &vecBbox, const int &height, const int &width, bool square){
     if(vecBbox.empty()){
         cout<<"Bbox is empty!!"<<endl;
         return;
@@ -320,7 +320,7 @@ void MTCNN::refine(vector<Bbox> &vecBbox, const int &height, const int &width, b
     }
 }
 
-void MTCNN::extractMaxFace(vector<Bbox>& boundingBox_)
+void mtcnn::CFaceDetection::extractMaxFace(vector<Bbox>& boundingBox_)
 {
     if (boundingBox_.empty()) {
         return;
@@ -331,7 +331,7 @@ void MTCNN::extractMaxFace(vector<Bbox>& boundingBox_)
     }
 }
 
-void MTCNN::PNet(float scale)
+void mtcnn::CFaceDetection::PNet(float scale)
 {
     //first stage
     int hs = (int)ceil(img_h*scale);
@@ -355,7 +355,7 @@ void MTCNN::PNet(float scale)
 }
 
 
-void MTCNN::PNet(){
+void mtcnn::CFaceDetection::PNet(){
     firstBbox_.clear();
     float minl = img_w < img_h? img_w: img_h;
     float m = (float)MIN_DET_SIZE/minsize;
@@ -386,7 +386,7 @@ void MTCNN::PNet(){
         boundingBox_.clear();
     }
 }
-void MTCNN::RNet(){
+void mtcnn::CFaceDetection::RNet(){
     secondBbox_.clear();
     int count = 0;
     for(vector<Bbox>::iterator it=firstBbox_.begin(); it!=firstBbox_.end();it++){
@@ -411,7 +411,7 @@ void MTCNN::RNet(){
         }
     }
 }
-void MTCNN::ONet(){
+void mtcnn::CFaceDetection::ONet(){
     thirdBbox_.clear();
     for(vector<Bbox>::iterator it=secondBbox_.begin(); it!=secondBbox_.end();it++){
         ncnn::Mat tempIm;
@@ -442,7 +442,7 @@ void MTCNN::ONet(){
     }
 }
 
-void MTCNN::detect(ncnn::Mat& img_, std::vector<Bbox>& finalBbox_){
+void mtcnn::CFaceDetection::detect(ncnn::Mat& img_, std::vector<Bbox>& finalBbox_){
     img = img_;
     img_w = img.w;
     img_h = img.h;
@@ -476,7 +476,7 @@ void MTCNN::detect(ncnn::Mat& img_, std::vector<Bbox>& finalBbox_){
     finalBbox_ = thirdBbox_;
 }
 
-void MTCNN::detectMaxFace(ncnn::Mat& img_, std::vector<Bbox>& finalBbox) {
+void mtcnn::CFaceDetection::detectMaxFace(ncnn::Mat& img_, std::vector<Bbox>& finalBbox) {
     firstPreviousBbox_.clear();
     secondPreviousBbox_.clear();
     thirdPrevioussBbox_.clear();
