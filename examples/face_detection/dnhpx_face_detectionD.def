@@ -1,4 +1,4 @@
-LIBRARY	"FaceDetectEngine"
+LIBRARY	"face_detectionD"
 EXPORTS
 	DNHPXSetFaceDetectLibPath	@1
 	DNHPXInitFaceDetect			@2

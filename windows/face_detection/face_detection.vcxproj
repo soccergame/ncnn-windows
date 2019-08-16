@@ -35,8 +35,8 @@
     <ClCompile Include="..\..\examples\face_detection\mtcnn.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\face_detection\FaceDetectEngine.def" />
-    <None Include="..\..\examples\face_detection\FaceDetectEngineD.def" />
+    <None Include="..\..\examples\face_detection\dnhpx_face_detection.def" />
+    <None Include="..\..\examples\face_detection\dnhpx_face_detectionD.def" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6DA9B8F0-C1EC-4B2F-8F8A-F2175D5095D6}</ProjectGuid>
@@ -115,7 +115,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IntDir>$(SolutionDir)_Temp\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
-    <TargetName>FaceDetectEngineD</TargetName>
+    <TargetName>$(ProjectName)D</TargetName>
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -128,13 +128,13 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)_Temp\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
-    <TargetName>FaceDetectEngine</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)_Temp\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
-    <TargetName>FaceDetectEngineS</TargetName>
+    <TargetName>$(ProjectName)S</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -166,7 +166,7 @@
       <AdditionalDependencies>libncnnD.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <ForceFileOutput>MultiplyDefinedSymbolOnly</ForceFileOutput>
-      <ModuleDefinitionFile>..\..\examples\face_detection\FaceDetectEngineD.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\examples\face_detection\dnhpx_face_detectionD.def</ModuleDefinitionFile>
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>D:\project\common\libs\opencv2413\vc14\x64\staticlib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -229,7 +229,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>..\..\examples\face_detection\FaceDetectEngine.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\examples\face_detection\dnhpx_face_detection.def</ModuleDefinitionFile>
       <AdditionalDependencies>libncnn.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ForceFileOutput>MultiplyDefinedSymbolOnly</ForceFileOutput>

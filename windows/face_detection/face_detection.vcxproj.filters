@@ -29,7 +29,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\face_detection\FaceDetectEngine.def" />
-    <None Include="..\..\examples\face_detection\FaceDetectEngineD.def" />
+    <None Include="..\..\examples\face_detection\dnhpx_face_detection.def" />
+    <None Include="..\..\examples\face_detection\dnhpx_face_detectionD.def" />
   </ItemGroup>
 </Project>
