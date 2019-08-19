@@ -326,10 +326,10 @@ int __stdcall DNHPXFaceBuffering(const cv::Mat& input_image,
 
             // 4、将图层进行叠加
             cv::Mat input_float_image, high_pass_float;
-            std::cout << high_pass.channels() << std::endl;
+            //std::cout << high_pass.channels() << std::endl;
             high_pass.convertTo(high_pass_float, CV_32F);
             input_image.convertTo(input_float_image, CV_32F);
-            std::cout << high_pass_float.channels() << " " << input_float_image.channels() << std::endl;
+            //std::cout << high_pass_float.channels() << " " << input_float_image.channels() << std::endl;
             input_float_image = (input_float_image * (1.0f - param.opacity) +
                 (input_float_image + 2.0f * high_pass_float - 256.0f) * param.opacity);
 
