@@ -2,6 +2,7 @@
 #include "mtcnn.h"
 #include "dnhpx_error_code.h"
 #include "opencv2/imgproc.hpp"
+#include "opencv2/highgui.hpp"
 
 #if defined( _ANDROID) || defined(_IOS) || defined(__GNUC__)
 #include <cerrno>
@@ -129,7 +130,7 @@ int __stdcall DNHPXInitFaceDetect(DNHPXFaceDetHandle* pHandle, const char *model
 }
 
 int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat &image,
-    DNHPXFaceRect& face_box, const float min_size, const int num_threads){
+    DNHPXFaceRect& face_box, const int min_size, const int num_threads){
     
     if(NULL == handle){
         //LOG(ERROR) << "handle == NULL!" << endl;
@@ -159,7 +160,7 @@ int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat &image
         //mtcnn face detection
         std::vector<mtcnn::Bbox> finalBbox;
         pEngineData->pFaceDetect->detectMaxFace(ncnn_img, finalBbox);
-        const int num_box = finalBbox.size();
+        const int num_box = int(finalBbox.size());
         if (num_box <1)
         {
             //LOG(ERROR) << "detect no face!" << endl;
@@ -194,7 +195,7 @@ int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat &image
 }
 
 int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat& image,
-    std::vector<DNHPXFaceRect>& face_box, const float min_size, const int num_threads) {
+    std::vector<DNHPXFaceRect>& face_box, const int min_size, const int num_threads) {
     if (NULL == handle) {
         //LOG(ERROR) << "handle == NULL!" << endl;
         return DNHPX_INVALID_INPUT;
@@ -310,10 +311,13 @@ int __stdcall DNHPXFaceBuffering(const cv::Mat& input_image,
             cv::Mat high_pass;
             cv::bilateralFilter(input_image, high_pass, param.radius, param.sigma_color,
                 param.sigma_space);
+            //cv::imwrite("D:/project/ncnn-windows/Build/x64/Debug/result.jpg", high_pass);
 
             // 2、提取细节边缘
-            high_pass = high_pass - input_image;
-            high_pass = high_pass + cv::Scalar_<unsigned char>(param.white);
+            high_pass = high_pass - input_image + param.white;
+            //cv::imwrite("D:/project/ncnn-windows/Build/x64/Debug/result1.jpg", high_pass);
+            /*high_pass = high_pass + output_image.setTo(cv::Scalar_<unsigned char>());
+            cv::imwrite("D:/project/ncnn-windows/Build/x64/Debug/result2.jpg", high_pass);*/
 
             // 3、高斯滤波，消除噪点
             cv::GaussianBlur(high_pass, high_pass,
@@ -322,8 +326,10 @@ int __stdcall DNHPXFaceBuffering(const cv::Mat& input_image,
 
             // 4、将图层进行叠加
             cv::Mat input_float_image, high_pass_float;
+            std::cout << high_pass.channels() << std::endl;
             high_pass.convertTo(high_pass_float, CV_32F);
             input_image.convertTo(input_float_image, CV_32F);
+            std::cout << high_pass_float.channels() << " " << input_float_image.channels() << std::endl;
             input_float_image = (input_float_image * (1.0f - param.opacity) +
                 (input_float_image + 2.0f * high_pass_float - 256.0f) * param.opacity);
 

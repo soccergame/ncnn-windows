@@ -110,6 +110,7 @@ int main(int argc, char** argv)
         // Read Image
         //cv::Mat garyImgData = cv::imread(strImgName, CV_LOAD_IMAGE_GRAYSCALE);
         cv::Mat oriImgData = cv::imread(strImgName, cv::IMREAD_COLOR);
+
         // Face detection
         timeCount.Start();
         DNHPXFaceRect face_box;
@@ -119,6 +120,18 @@ int main(int argc, char** argv)
 
         timeCount.Stop();
         std::cout << "Detection: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
+
+        cv::Mat buffering_image;
+        DNHPXFaceBuffering(oriImgData, std::vector<DNHPXFaceRect>(1, face_box), buffering_image);
+        std::string image_name = strImgName;
+        std::string result_name;
+        size_t found = image_name.rfind(".");
+        if (found != std::string::npos)
+            result_name = image_name.replace(found, std::string::npos, "_buffering.jpg");
+        else
+            result_name = image_name + "_buffering.jpg";
+
+        cv::imwrite(result_name, buffering_image);
         
         cv::Mat cvt_image;
         cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2GRAY);
@@ -136,9 +149,7 @@ int main(int argc, char** argv)
         std::cout << "Alignment: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
         
         if (DNHPX_OK == retValue) {
-            std::string image_name = strImgName;
-            std::string result_name;
-            size_t found = image_name.rfind(".");
+            image_name = strImgName;
             if (found != std::string::npos)
                 result_name = image_name.replace(found, std::string::npos, "_88.jpg");
             else

@@ -166,11 +166,11 @@ void mtcnn::CFaceDetection::generateBbox(ncnn::Mat score, ncnn::Mat location, st
         for(int col=0;col<score.w;col++){
             if(*p>threshold[0]){
                 bbox.score = *p;
-                bbox.x1 = round((stride*col+1)*inv_scale);
-                bbox.y1 = round((stride*row+1)*inv_scale);
-                bbox.x2 = round((stride*col+1+cellsize)*inv_scale);
-                bbox.y2 = round((stride*row+1+cellsize)*inv_scale);
-                bbox.area = (bbox.x2 - bbox.x1) * (bbox.y2 - bbox.y1);
+                bbox.x1 = int(round((stride*col+1)*inv_scale));
+                bbox.y1 = int(round((stride*row+1)*inv_scale));
+                bbox.x2 = int(round((stride*col+1+cellsize)*inv_scale));
+                bbox.y2 = int(round((stride*row+1+cellsize)*inv_scale));
+                bbox.area = float(bbox.x2 - bbox.x1) * float(bbox.y2 - bbox.y1);
                 const int index = row * score.w + col;
                 for(int channel=0;channel<4;channel++){
                     bbox.regreCoord[channel]=location.channel(channel)[index];
@@ -289,8 +289,8 @@ void mtcnn::CFaceDetection::refine(vector<Bbox> &vecBbox, const int &height, con
     float h = 0, w = 0;
     float x1=0, y1=0, x2=0, y2=0;
     for(vector<Bbox>::iterator it=vecBbox.begin(); it!=vecBbox.end();it++){
-        bbw = (*it).x2 - (*it).x1 + 1;
-        bbh = (*it).y2 - (*it).y1 + 1;
+        bbw = (*it).x2 - (*it).x1 + 1.0f;
+        bbh = (*it).y2 - (*it).y1 + 1.0f;
         x1 = (*it).x1 + (*it).regreCoord[0]*bbw;
         y1 = (*it).y1 + (*it).regreCoord[1]*bbh;
         x2 = (*it).x2 + (*it).regreCoord[2]*bbw;
@@ -302,12 +302,12 @@ void mtcnn::CFaceDetection::refine(vector<Bbox> &vecBbox, const int &height, con
             w = x2 - x1 + 1;
             h = y2 - y1 + 1;
             maxSide = (h>w)?h:w;
-            x1 = x1 + w*0.5 - maxSide*0.5;
-            y1 = y1 + h*0.5 - maxSide*0.5;
-            (*it).x2 = round(x1 + maxSide - 1);
-            (*it).y2 = round(y1 + maxSide - 1);
-            (*it).x1 = round(x1);
-            (*it).y1 = round(y1);
+            x1 = x1 + w*0.5f - maxSide*0.5f;
+            y1 = y1 + h*0.5f - maxSide*0.5f;
+            (*it).x2 = int(round(x1 + maxSide - 1));
+            (*it).y2 = int(round(y1 + maxSide - 1));
+            (*it).x1 = int(round(x1));
+            (*it).y1 = int(round(y1));
         }
 
         //boundary check
@@ -405,7 +405,7 @@ void mtcnn::CFaceDetection::RNet(){
             for(int channel=0;channel<4;channel++){
                 it->regreCoord[channel]=(float)bbox[channel];//*(bbox.data+channel*bbox.cstep);
             }
-            it->area = (it->x2 - it->x1)*(it->y2 - it->y1);
+            it->area = float(it->x2 - it->x1)*float(it->y2 - it->y1);
             it->score = score.channel(1)[0];//*(score.data+score.cstep);
             secondBbox_.push_back(*it);
         }
@@ -454,12 +454,12 @@ void mtcnn::CFaceDetection::detect(ncnn::Mat& img_, std::vector<Bbox>& finalBbox
     nms(firstBbox_, nms_threshold[0]);
     refine(firstBbox_, img_h, img_w, true);
 #ifdef _DEBUG
-    printf("firstBbox_.size()=%d\n", firstBbox_.size());
+    printf("firstBbox_.size()=%d\n", int(firstBbox_.size()));
 #endif
     //second stage
     RNet();
 #ifdef _DEBUG
-    printf("secondBbox_.size()=%d\n", secondBbox_.size());
+    printf("secondBbox_.size()=%d\n", int(secondBbox_.size()));
 #endif
     if (secondBbox_.size() < 1) return;
     nms(secondBbox_, nms_threshold[1]);
@@ -468,7 +468,7 @@ void mtcnn::CFaceDetection::detect(ncnn::Mat& img_, std::vector<Bbox>& finalBbox
     //third stage
     ONet();
 #ifdef _DEBUG
-    printf("thirdBbox_.size()=%d\n", thirdBbox_.size());
+    printf("thirdBbox_.size()=%d\n", int(thirdBbox_.size()));
 #endif
     if (thirdBbox_.size() < 1) return;
     refine(thirdBbox_, img_h, img_w, true);

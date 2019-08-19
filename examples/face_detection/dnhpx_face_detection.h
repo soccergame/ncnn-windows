@@ -19,11 +19,11 @@ extern "C" {
 
     // Detect max face
     int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat& image,
-        DNHPXFaceRect& face_box, const float min_size = 40, const int num_threads = 4);
+        DNHPXFaceRect& face_box, const int min_size = 40, const int num_threads = 4);
 
     // Detect all face
     int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat &image,
-        std::vector<DNHPXFaceRect> &face_box, const float min_size = 40, 
+        std::vector<DNHPXFaceRect> &face_box, const int min_size = 40, 
         const int num_threads = 4);
 
     // Release

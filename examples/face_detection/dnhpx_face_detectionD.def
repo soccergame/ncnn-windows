@@ -5,3 +5,4 @@ EXPORTS
 	DNHPXMaxFaceDetect	        @3
 	DNHPXUninitFaceDetect		@4
 	DNHPXFaceDetect		        @5
+    DNHPXFaceBuffering          @6
