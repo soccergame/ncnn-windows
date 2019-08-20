@@ -1,4 +1,4 @@
-#include "autoarray.h"
+#include "dnhpx_auto_array.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -11,7 +11,7 @@
 #include "MyString.h"
 #include "MyFile.h"
 #include "tclap/CmdLine.h"
-#include "AlgorithmUtils.h"
+#include "dnhpx_algorithm_utils.h"
 
 #ifndef _WIN32
 #include<unistd.h> 
@@ -90,7 +90,7 @@ int _tmain(int argc, TCHAR *argv[])
         totalLen += sizeof(int);
 
         totalLen = ((totalLen + 7) / 8) * 8;
-        AutoArray<char> tempBuffer(totalLen);
+        dnhpx::AutoArray<char> tempBuffer(totalLen);
         int *pBuffer = reinterpret_cast<int *>(tempBuffer.begin());
         pBuffer[0] = ModelNumber;
         for (int i = 0; i < ModelNumber; ++i)
@@ -131,8 +131,8 @@ int _tmain(int argc, TCHAR *argv[])
         for (int i = 0; i < numOfData; ++i)
         {
             int tempData = pBuffer[i];
-            pBuffer[i] = hzx::rol(
-                static_cast<unsigned int>(tempData), hzx::g_shiftBits);
+            pBuffer[i] = dnhpx::rol(
+                static_cast<unsigned int>(tempData), dnhpx::g_shiftBits);
         }
 
         // write encrypted model file	

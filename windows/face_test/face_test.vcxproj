@@ -223,7 +223,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <AdditionalDependencies>FaceDetectEngine.lib;face_gender.lib;face_alignment.lib;opencv_world411.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>face_detection.lib;face_gender.lib;face_alignment.lib;opencv_world411.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build\$(Platform)\$(Configuration)\;D:\project\common\libs\opencv411\vc16\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ForceFileOutput>MultiplyDefinedSymbolOnly</ForceFileOutput>
     </Link>

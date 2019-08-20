@@ -220,7 +220,8 @@ int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat& image,
         pEngineData->pFaceDetect->SetMinFace(min_size);
         pEngineData->pFaceDetect->SetNumThreads(num_threads);
 
-        ncnn::Mat ncnn_img = ncnn::Mat::from_pixels(image.data, ncnn::Mat::PIXEL_BGR2RGB, image.cols, image.rows);
+        ncnn::Mat ncnn_img = ncnn::Mat::from_pixels(image.data, ncnn::Mat::PIXEL_BGR2RGB, 
+            image.cols, image.rows);
         //mtcnn face detection
         std::vector<mtcnn::Bbox> finalBbox;
         pEngineData->pFaceDetect->detect(ncnn_img, finalBbox);

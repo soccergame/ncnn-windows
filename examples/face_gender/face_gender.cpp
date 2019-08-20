@@ -9,14 +9,14 @@
 #include <fstream>
 #include <time.h>
 #include <iostream>
-#include "AlgorithmUtils.h"
+#include "dnhpx_algorithm_utils.h"
 
 #define GLOG_NO_ABBREVIATED_SEVERITIES
 
 #include "face_gender.h"
-#include "NormFaceImage.h"
-#include "autoarray.h"
-#include "ErrorCodeDef.h"
+#include "dnhpx_face_normalization.h"
+#include "dnhpx_auto_array.h"
+#include "dnhpx_error_code.h"
 #include "net.h"
 
 
@@ -33,8 +33,8 @@ namespace
     char g_szDeepFeatSDKPath[_MAX_PATH] = { 0 };
     int g_num_threads = 1;
     bool g_light_mode = true;
-    DNHPX::CNormImage3pt affineNorm;
-    AutoArray<unsigned char> pWeightBuf;
+    dnhpx::CNormImage3pt affineNorm;
+    dnhpx::AutoArray<unsigned char> pWeightBuf;
     const float mean_vals[3] = { 127.5, 127.5, 127.5 };
     const float norm_vals[3] = { 0.0078125, 0.0078125, 0.0078125 };
 
@@ -42,7 +42,7 @@ namespace
     volatile int g_FaceGenderInitCount = 0;
 }
 
-int __stdcall GetFaceGenderScore(GenderHandle handle,
+int __stdcall GetFaceGenderScore(DNHPXFaceAttHandle handle,
     const float *feaPoints, const unsigned char *image_data, int width,
     int height, int channel, float &gender_score, int &age, float &beauty_score,
     float &glass_score, int &emotion, float &happy_score)
@@ -62,7 +62,7 @@ int __stdcall GetFaceGenderScore(GenderHandle handle,
     {
         ncnn::Mat ncnn_face_img(96, 128, 3, 4u);
         if (ncnn_face_img.empty())
-            return DNHPX_INVALID_INPUT;
+            return DNHPX_MEMORY_ALLOC_ERROR;
 
         //count = clock();
         int size = width * height;
@@ -184,7 +184,7 @@ int __stdcall SetFaceGenderLibPath(const char *szLibPath)
 }
 
 int __stdcall InitFaceGender(const char *szNetName,
-    GenderHandle *pHandle, int num_threads, bool light_mode)
+    DNHPXFaceAttHandle* pHandle, int num_threads, bool light_mode)
 {
 	if (pHandle == NULL)
 		return -1;
@@ -227,7 +227,7 @@ int __stdcall InitFaceGender(const char *szNetName,
 
         //CMyFile fileModel(strDllPath.c_str(), CMyFile::modeRead);
         //int dataSize = static_cast<int>(fileModel.GetLength());
-        AutoArray<char> encryptedData(dataSize);
+        dnhpx::AutoArray<char> encryptedData(dataSize);
         //fileModel.Read(encryptedData, dataSize);
         fileModel.read(encryptedData.begin(), dataSize);
         //fileModel.Close();
@@ -239,8 +239,8 @@ int __stdcall InitFaceGender(const char *szNetName,
         for (int i = 0; i < numOfData; ++i)
         {
             int tempData = pBuffer[i];
-            pBuffer[i] = DNHPX::ror(static_cast<unsigned int>(tempData),
-                DNHPX::g_shiftBits);
+            pBuffer[i] = dnhpx::ror(static_cast<unsigned int>(tempData),
+                dnhpx::g_shiftBits);
         }
 
         const int modelnumber = pBuffer[0];
@@ -272,7 +272,7 @@ int __stdcall InitFaceGender(const char *szNetName,
         };
         affineNorm.Initialize(96, 128, 0.78125, 128, NormPoints_128);
 
-		*pHandle = reinterpret_cast<GenderHandle>(pCaffeNet);
+		*pHandle = reinterpret_cast<DNHPXFaceAttHandle>(pCaffeNet);
 
         g_bFaceGenderInited = true;
         ++g_FaceGenderInitCount;
@@ -295,7 +295,7 @@ int __stdcall InitFaceGender(const char *szNetName,
 }
 
 int __stdcall InitOLDFaceGender(const char *szParamName,
-    const char *szBinName, GenderHandle *pHandle,
+    const char* szBinName, DNHPXFaceAttHandle* pHandle,
     int num_threads, bool light_mode)
 {
     if (pHandle == NULL)
@@ -349,7 +349,7 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
         };
         affineNorm.Initialize(96, 128, 0.78125, 128, NormPoints_128);
 
-        *pHandle = reinterpret_cast<GenderHandle>(pCaffeNet);
+        *pHandle = reinterpret_cast<DNHPXFaceAttHandle>(pCaffeNet);
 
         g_bFaceGenderInited = true;
         ++g_FaceGenderInitCount;
@@ -370,7 +370,7 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
     return retValue;
 }
 
-int __stdcall UninitFaceGender(GenderHandle handle)
+int __stdcall UninitFaceGender(DNHPXFaceAttHandle handle)
 {
     if (g_bFaceGenderInited) {
         --g_FaceGenderInitCount;

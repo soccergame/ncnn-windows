@@ -89,8 +89,9 @@ int main(int argc, char** argv)
     try
     {
         // Initialize        
-        retValue = DNHPXSetFaceAlignmentLibPath(pModulePath);       
-        retValue |= DNHPXInitFaceAlignment();
+        retValue = DNHPXSetFaceAlignmentLibPath(pModulePath);  
+        DNHPXFaceAliHandle align_handle;
+        retValue |= DNHPXInitFaceAlignment(&align_handle);
         //retValue |= InitDeepFeat("NNModel.dat", gpuId, &hAge);
         if (0 != retValue) {
             std::cout << "Alignment error Code: " << retValue << std::endl;
@@ -102,7 +103,7 @@ int main(int argc, char** argv)
         retValue |= DNHPXInitFaceDetect(&hDetect);
         if (DNHPX_OK != retValue) {
             std::cout << "Detection error Code: " << retValue << std::endl;
-            DNHPXUninitFaceAlignment();
+            DNHPXUninitFaceAlignment(align_handle);
             throw retValue;
         }
             
@@ -121,17 +122,17 @@ int main(int argc, char** argv)
         timeCount.Stop();
         std::cout << "Detection: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
 
-        cv::Mat buffering_image;
-        DNHPXFaceBuffering(oriImgData, std::vector<DNHPXFaceRect>(1, face_box), buffering_image);
+        /*cv::Mat buffering_image;
+        DNHPXFaceBuffering(oriImgData, std::vector<DNHPXFaceRect>(1, face_box), buffering_image);*/
         std::string image_name = strImgName;
         std::string result_name;
         size_t found = image_name.rfind(".");
-        if (found != std::string::npos)
+        /*if (found != std::string::npos)
             result_name = image_name.replace(found, std::string::npos, "_buffering.jpg");
         else
             result_name = image_name + "_buffering.jpg";
 
-        cv::imwrite(result_name, buffering_image);
+        cv::imwrite(result_name, buffering_image);*/
         
         cv::Mat cvt_image;
         cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2GRAY);
@@ -139,12 +140,18 @@ int main(int argc, char** argv)
         DNHPXEyePointF eye_points;
         eye_points.left_eye = face_box.key_points[0];
         eye_points.right_eye = face_box.key_points[1];
-        eye_points.confidence = 100;
-        DNHPXPointF key_points[88];
+        // 如果输入眼睛位置（或者有可能是五个关键点位置），置信度一定要设为大于0
+        eye_points.confidence = 100.f;
+        DNHPXPointF key_points[FEATURE_POINT_NUM];
 
         timeCount.Start();
-        retValue = DNHPXFaceAlignmentEx(cvt_image.data, cvt_image.cols, 
+#ifdef USE_ALIGNMENT_OLD
+        retValue = DNHPXFaceAlignmentEx(align_handle, cvt_image.data, cvt_image.cols,
             cvt_image.rows, &eye_points, key_points);
+#else
+        retValue = DNHPXAlignmentFromFace(align_handle, oriImgData.data, oriImgData.cols,
+            oriImgData.rows, &face_box, key_points);
+#endif
         timeCount.Stop();
         std::cout << "Alignment: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
         
@@ -158,19 +165,22 @@ int main(int argc, char** argv)
             cv::Mat result_img = oriImgData.clone();
             // gray_image = cv::imread(argv[i], cv::IMREAD_COLOR);
             //fp.open(result_name, fstream::out);
-            for (int j = 0; j < 88; ++j) {
+            for (int j = 0; j < FEATURE_POINT_NUM; ++j) {
                 cv::circle(result_img,
                     cv::Point(int(key_points[j].x + 0.5), int(key_points[j].y + 0.5)),
                     2,
                     cv::Scalar(255, 0, 0),
                     2);
             }
+            cv::rectangle(result_img, cv::Rect(face_box.face.left, face_box.face.top,
+                face_box.face.width(), face_box.face.height()), cv::Scalar(255, 0, 0),
+                2);
             cv::imwrite(result_name, result_img);
         }
         else
             std::cout << "Can not read images!" << std::endl;
         
-        DNHPXUninitFaceAlignment();
+        DNHPXUninitFaceAlignment(align_handle);
         DNHPXUninitFaceDetect(hDetect);
     }
     catch (const std::bad_alloc &)
