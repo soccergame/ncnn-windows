@@ -23,8 +23,7 @@ namespace {
         else
             return true;
     }
-
-    dnhpx::Logger logger(_T("./mtcnn_cpp.log"), dnhpx::Logger::TypeError);
+    //dnhpx::Logger logger(_T("./mtcnn_cpp.log"), dnhpx::Logger::TypeError);
 }
 
 
@@ -240,8 +239,9 @@ void mtcnn::CFaceDetection::nms(std::vector<Bbox> &boundingBox_, const float ove
 }
 void mtcnn::CFaceDetection::refine(vector<Bbox> &vecBbox, const int &height, const int &width, bool square){
     if(vecBbox.empty()){
-        logger.RecordLog(dnhpx::Logger::TypeError, _T("%s\n"), _T("Bbox is empty!!"));
+        //logger.RecordLog(dnhpx::Logger::TypeError, _T("%s\n"), _T("Bbox is empty!!"));
         //cout<<"Bbox is empty!!"<<endl;
+        printf("%s\n", "Bbox is empty!!");
         return;
     }
     float bbw=0, bbh=0, maxSide=0;
