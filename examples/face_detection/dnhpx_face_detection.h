@@ -5,7 +5,7 @@
 #define __stdcall
 #endif
 
-#include <opencv2/core/core.hpp>
+//#include <opencv2/core/core.hpp>
 #include "dnhpx_utility.h"
 
 #ifdef __cplusplus
@@ -18,12 +18,14 @@ extern "C" {
     int __stdcall DNHPXInitFaceDetect(DNHPXFaceDetHandle* pHandle, const char* model_name = NULL);
 
     // Detect max face
-    int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat& image,
-        DNHPXFaceRect& face_box, const int min_size = 40, const int num_threads = 4);
+    int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const unsigned char* image_data,
+        int image_width, int image_height, DNHPXFaceRect& face_box, 
+        const int min_size = 40, const int num_threads = 4);
 
     // Detect all face
-    int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat &image,
-        std::vector<DNHPXFaceRect> &face_box, const int min_size = 40, 
+    int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const unsigned char* image_data,
+        int image_width, int image_height, std::vector<DNHPXFaceRect> &face_box, 
+        const int min_size = 40, 
         const int num_threads = 4);
 
     // Release
@@ -38,10 +40,9 @@ extern "C" {
      *      param[in]: 滤波参数，可以使用默认值
      *	返回值: int (参见dnhpx_error_code.h中的error code定义)
      */
-    int __stdcall DNHPXFaceBuffering(const cv::Mat& input_image, 
-        std::vector<DNHPXFaceRect>& face_box,
-        cv::Mat& output_image,
-        dnhpx::FaceBufferingParam param = dnhpx::FaceBufferingParam());
+    int __stdcall DNHPXFaceBuffering(const unsigned char* input_image,
+        int image_width, int image_height, std::vector<DNHPXFaceRect>& face_box,
+        unsigned char* output_image, dnhpx::FaceBufferingParam param = dnhpx::FaceBufferingParam());
 
 #ifdef __cplusplus
 }

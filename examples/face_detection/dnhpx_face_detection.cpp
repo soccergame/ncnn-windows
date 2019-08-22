@@ -129,8 +129,9 @@ int __stdcall DNHPXInitFaceDetect(DNHPXFaceDetHandle* pHandle, const char *model
     return res;
 }
 
-int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat &image,
-    DNHPXFaceRect& face_box, const int min_size, const int num_threads){
+int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const unsigned char* image_data,
+    int image_width, int image_height, DNHPXFaceRect& face_box, 
+    const int min_size, const int num_threads){
     
     if(NULL == handle){
         //LOG(ERROR) << "handle == NULL!" << endl;
@@ -140,7 +141,7 @@ int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat &image
 	{
 		return DNHPX_INVALID_FACE_RECT;
 	}
-    if (image.data == NULL) {
+    if (image_data == NULL) {
         return DNHPX_INVALID_INPUT;
     }
 
@@ -156,7 +157,8 @@ int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat &image
         pEngineData->pFaceDetect->SetMinFace(min_size);
         pEngineData->pFaceDetect->SetNumThreads(num_threads);
 
-        ncnn::Mat ncnn_img = ncnn::Mat::from_pixels(image.data, ncnn::Mat::PIXEL_BGR2RGB, image.cols, image.rows);
+        ncnn::Mat ncnn_img = ncnn::Mat::from_pixels(image_data, ncnn::Mat::PIXEL_BGR2RGB, 
+            image_width, image_height);
         //mtcnn face detection
         std::vector<mtcnn::Bbox> finalBbox;
         pEngineData->pFaceDetect->detectMaxFace(ncnn_img, finalBbox);
@@ -168,8 +170,8 @@ int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat &image
         }
         face_box.face.left = (finalBbox[0].x1 < 0) ? 0 : finalBbox[0].x1;
         face_box.face.top = (finalBbox[0].y1 < 0) ? 0 : finalBbox[0].y1;
-        face_box.face.right = (finalBbox[0].x2 > image.cols - 1) ? image.cols - 1 : finalBbox[0].x2;
-        face_box.face.bottom = (finalBbox[0].y2 > image.rows - 1) ? image.rows - 1 : finalBbox[0].y2;
+        face_box.face.right = (finalBbox[0].x2 > image_width - 1) ? image_width - 1 : finalBbox[0].x2;
+        face_box.face.bottom = (finalBbox[0].y2 > image_height - 1) ? image_height - 1 : finalBbox[0].y2;
         face_box.confidence = finalBbox[0].score;
 
         for (int i = 0; i < 5; i++)
@@ -194,8 +196,9 @@ int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat &image
     return res;
 }
 
-int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat& image,
-    std::vector<DNHPXFaceRect>& face_box, const int min_size, const int num_threads) {
+int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const unsigned char* image_data,
+    int image_width, int image_height, std::vector<DNHPXFaceRect>& face_box, 
+    const int min_size, const int num_threads) {
     if (NULL == handle) {
         //LOG(ERROR) << "handle == NULL!" << endl;
         return DNHPX_INVALID_INPUT;
@@ -204,7 +207,7 @@ int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat& image,
     {
         return DNHPX_INVALID_FACE_RECT;
     }
-    if (image.data == NULL) {
+    if (image_data == NULL) {
         return DNHPX_INVALID_INPUT;
     }
 
@@ -220,8 +223,8 @@ int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat& image,
         pEngineData->pFaceDetect->SetMinFace(min_size);
         pEngineData->pFaceDetect->SetNumThreads(num_threads);
 
-        ncnn::Mat ncnn_img = ncnn::Mat::from_pixels(image.data, ncnn::Mat::PIXEL_BGR2RGB, 
-            image.cols, image.rows);
+        ncnn::Mat ncnn_img = ncnn::Mat::from_pixels(image_data, ncnn::Mat::PIXEL_BGR2RGB,
+            image_width, image_height);
         //mtcnn face detection
         std::vector<mtcnn::Bbox> finalBbox;
         pEngineData->pFaceDetect->detect(ncnn_img, finalBbox);
@@ -236,8 +239,8 @@ int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const cv::Mat& image,
         for (int j = 0; j < num_box; ++j) {
             face_box[j].face.left = (finalBbox[j].x1 < 0) ? 0 : finalBbox[j].x1;
             face_box[j].face.top = (finalBbox[j].y1 < 0) ? 0 : finalBbox[j].y1;
-            face_box[j].face.right = (finalBbox[j].x2 > image.cols - 1) ? image.cols - 1 : finalBbox[j].x2;
-            face_box[j].face.bottom = (finalBbox[j].y2 > image.rows - 1) ? image.rows - 1 : finalBbox[j].y2;
+            face_box[j].face.right = (finalBbox[j].x2 > image_width - 1) ? image_width - 1 : finalBbox[j].x2;
+            face_box[j].face.bottom = (finalBbox[j].y2 > image_height - 1) ? image_height - 1 : finalBbox[j].y2;
             face_box[j].confidence = finalBbox[j].score;
 
             for (int i = 0; i < 5; i++)
@@ -287,11 +290,11 @@ int __stdcall DNHPXUninitFaceDetect(DNHPXFaceDetHandle handle)
 }
 
 // 版本1.0，暂时不考虑人脸的位置，而是对全图进行滤波
-int __stdcall DNHPXFaceBuffering(const cv::Mat& input_image,
-    std::vector<DNHPXFaceRect>& face_box, cv::Mat& output_image, 
-    dnhpx::FaceBufferingParam param)
+int __stdcall DNHPXFaceBuffering(const unsigned char* input_image,
+    int image_width, int image_height, std::vector<DNHPXFaceRect>& face_box, 
+    unsigned char* output_image, dnhpx::FaceBufferingParam param)
 {
-    if (input_image.data == NULL) {
+    if (input_image == NULL) {
         return DNHPX_INVALID_INPUT;
     }
 
@@ -302,20 +305,22 @@ int __stdcall DNHPXFaceBuffering(const cv::Mat& input_image,
     int res = DNHPX_OK;
 
     try {
+        cv::Mat input = cv::Mat(image_height, image_width, CV_8UC3, (void *)input_image);
+        cv::Mat output = cv::Mat(image_height, image_width, CV_8UC3, output_image);
         if (true == param.use_filter_only) {
-            cv::bilateralFilter(input_image, output_image, param.radius, param.sigma_color,
+            cv::bilateralFilter(input, output, param.radius, param.sigma_color,
                 param.sigma_space);
         }
         else {
             // 1、进行双边滤波（也可以使用表面滤波，但是opencv没有现成的函数），
             //    我自己定义的函数速度上可能存在一些问题，还需要改进，准备2.0放入
             cv::Mat high_pass;
-            cv::bilateralFilter(input_image, high_pass, param.radius, param.sigma_color,
+            cv::bilateralFilter(input, high_pass, param.radius, param.sigma_color,
                 param.sigma_space);
             //cv::imwrite("D:/project/ncnn-windows/Build/x64/Debug/result.jpg", high_pass);
 
             // 2、提取细节边缘
-            high_pass = high_pass - input_image + param.white;
+            high_pass = high_pass - input + param.white;
             //cv::imwrite("D:/project/ncnn-windows/Build/x64/Debug/result1.jpg", high_pass);
             /*high_pass = high_pass + output_image.setTo(cv::Scalar_<unsigned char>());
             cv::imwrite("D:/project/ncnn-windows/Build/x64/Debug/result2.jpg", high_pass);*/
@@ -329,13 +334,13 @@ int __stdcall DNHPXFaceBuffering(const cv::Mat& input_image,
             cv::Mat input_float_image, high_pass_float;
             //std::cout << high_pass.channels() << std::endl;
             high_pass.convertTo(high_pass_float, CV_32F);
-            input_image.convertTo(input_float_image, CV_32F);
+            input.convertTo(input_float_image, CV_32F);
             //std::cout << high_pass_float.channels() << " " << input_float_image.channels() << std::endl;
             input_float_image = (input_float_image * (1.0f - param.opacity) +
                 (input_float_image + 2.0f * high_pass_float - 256.0f) * param.opacity);
 
             //
-            input_float_image.convertTo(output_image, CV_8U);
+            input_float_image.convertTo(output, CV_8U);
         }
         
     }
