@@ -17,7 +17,7 @@
 #include <memory>
 #include <string>
 
-#define FACE_DETECTION_MODEL_NAME "libsnfd.so"
+#define FACE_DETECTION_MODEL_NAME "librlj.so"
 
 namespace {
     typedef struct _face_engine
@@ -93,7 +93,7 @@ int __stdcall DNHPXInitFaceDetect(DNHPXFaceDetHandle* pHandle, const char *model
         FaceDetectEngineData *pEngineData = new FaceDetectEngineData;
         *pHandle = (DNHPXFaceDetHandle)pEngineData;
 #ifndef OLD_NCNN
-        pEngineData->pFaceDetect = new MTCNN;
+        pEngineData->pFaceDetect = new mtcnn::CFaceDetection;
         res = pEngineData->pFaceDetect->Init(strDllPath);
         if (DNHPX_OK != res) {
             delete pEngineData;

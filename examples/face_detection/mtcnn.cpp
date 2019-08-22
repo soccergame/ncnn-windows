@@ -26,6 +26,10 @@ bool cmpArea(mtcnn::Bbox lsh, mtcnn::Bbox rsh) {
 
 //MTCNN::MTCNN(){}
 mtcnn::CFaceDetection::CFaceDetection() {
+    Pnet = NULL;
+    Rnet = NULL;
+    Onet = NULL;
+    al_domain.clear();
 }
 
 mtcnn::CFaceDetection::CFaceDetection(const string &model_path) {
@@ -42,90 +46,34 @@ mtcnn::CFaceDetection::CFaceDetection(const string &model_path) {
         model_path + "/det3.bin"
     };
 
-    Pnet.load_param(param_files[0].data());
-    Pnet.load_model(bin_files[0].data());
-    Rnet.load_param(param_files[1].data());
-    Rnet.load_model(bin_files[1].data());
-    Onet.load_param(param_files[2].data());
-    Onet.load_model(bin_files[2].data());
+    Pnet = new ncnn::Net();
+    Rnet = new ncnn::Net();
+    Onet = new ncnn::Net();
+
+    Pnet->load_param(param_files[0].data());
+    Pnet->load_model(bin_files[0].data());
+    Rnet->load_param(param_files[1].data());
+    Rnet->load_model(bin_files[1].data());
+    Onet->load_param(param_files[2].data());
+    Onet->load_model(bin_files[2].data());
 }
 
-mtcnn::CFaceDetection::CFaceDetection(const std::vector<std::string> param_files, const std::vector<std::string> bin_files) {
-    Pnet.load_param(param_files[0].data());
-    Pnet.load_model(bin_files[0].data());
-    Rnet.load_param(param_files[1].data());
-    Rnet.load_model(bin_files[1].data());
-    Onet.load_param(param_files[2].data());
-    Onet.load_model(bin_files[2].data());
-}
+//mtcnn::CFaceDetection::CFaceDetection(const std::vector<std::string> param_files, const std::vector<std::string> bin_files) {
+//    Pnet->load_param(param_files[0].data());
+//    Pnet->load_model(bin_files[0].data());
+//    Rnet->load_param(param_files[1].data());
+//    Rnet->load_model(bin_files[1].data());
+//    Onet->load_param(param_files[2].data());
+//    Onet->load_model(bin_files[2].data());
+//}
 
 int mtcnn::CFaceDetection::Init(const string &model_name){
 #ifndef OLD_NCNN
-    std::string strDllPath = model_name;
-
-    std::fstream fileModel;
-    fileModel.open(strDllPath.c_str(), 
-        std::fstream::in | std::fstream::binary);
-
-    AutoArray<char> encryptedData;
-    int dataSize = 0;
-    if (fileModel.is_open()) {
-        fileModel.seekg(0, std::fstream::end);
-        dataSize = int(fileModel.tellg());
-        fileModel.seekg(0, std::fstream::beg);
-
-        encryptedData.resize(dataSize);
-        fileModel.read(encryptedData.begin(), dataSize);  
-    }
-    fileModel.close();
-
-    if (dataSize <= 0)
-        return DNHPX_MODEL_NOT_INITIALIZED;
-
-    int *pBuffer = reinterpret_cast<int *>(encryptedData.begin());
-    // encrypt data by shift left		
-    int numOfData = dataSize / sizeof(pBuffer[0]);
-    for (int i = 0; i < numOfData; ++i)
-    {
-        int tempData = pBuffer[i];
-        pBuffer[i] = DNHPX::ror(static_cast<unsigned int>(tempData),
-            DNHPX::g_shiftBits);
-    }
-
-    const int modelnumber = pBuffer[0];
-
-    if (modelnumber == 3) {
-        std::vector<int> protoTxtLen, modelSize;
-        for (int i = 0; i < modelnumber; ++i)
-        {
-            protoTxtLen.push_back(pBuffer[2 * i + 1]);
-            modelSize.push_back(pBuffer[2 * i + 2]);
-        }
-
-        m_PnetWeight.resize(modelSize[0]);
-        m_RnetWeight.resize(modelSize[1]);
-        m_OnetWeight.resize(modelSize[2]);
-
-        char *pParamBuf = encryptedData.begin() +
-            sizeof(int) * (2 * modelnumber + 1);
-
-        memcpy(m_PnetWeight.begin(), pParamBuf + protoTxtLen[0],
-            modelSize[0] * sizeof(unsigned char));
-        Pnet.load_param_mem(pParamBuf);;
-        Pnet.load_model(m_PnetWeight.begin());
-        pParamBuf += protoTxtLen[0] + modelSize[0];
-
-
-        memcpy(m_RnetWeight.begin(), pParamBuf + protoTxtLen[1],
-            modelSize[1] * sizeof(unsigned char));
-        Rnet.load_param_mem(pParamBuf);;
-        Rnet.load_model(m_RnetWeight.begin());
-        pParamBuf += protoTxtLen[1] + modelSize[1];
-
-        memcpy(m_OnetWeight.begin(), pParamBuf + protoTxtLen[2],
-            modelSize[2] * sizeof(unsigned char));
-        Onet.load_param_mem(pParamBuf);;
-        Onet.load_model(m_OnetWeight.begin());
+    al_domain.init(model_name.c_str());
+    if (3 == al_domain.get_model_num()) {
+        Pnet = (ncnn::Net*)al_domain.get_model(0);
+        Rnet = (ncnn::Net*)al_domain.get_model(1);
+        Onet = (ncnn::Net*)al_domain.get_model(2);
     }
     else
         return DNHPX_MODEL_NOT_INITIALIZED;
@@ -135,10 +83,14 @@ int mtcnn::CFaceDetection::Init(const string &model_name){
 }
 
 
-mtcnn::CFaceDetection::~CFaceDetection(){
-    Pnet.clear();
-    Rnet.clear();
-    Onet.clear();
+mtcnn::CFaceDetection::~CFaceDetection(){ 
+#ifndef OLD_NCNN
+    al_domain.clear();
+#else
+    Pnet->clear();
+    Rnet->clear();
+    Onet->clear();
+#endif
 }
 
 void mtcnn::CFaceDetection::SetMinFace(int minSize){
@@ -338,7 +290,7 @@ void mtcnn::CFaceDetection::PNet(float scale)
     int ws = (int)ceil(img_w*scale);
     ncnn::Mat in;
     resize_bilinear(img, in, ws, hs);
-    ncnn::Extractor ex = Pnet.create_extractor();
+    ncnn::Extractor ex = Pnet->create_extractor();
     ex.set_light_mode(true);
     ex.set_num_threads(num_threads);
     ex.input("data", in);
@@ -372,7 +324,7 @@ void mtcnn::CFaceDetection::PNet(){
         int ws = (int)ceil(img_w*scales_[i]);
         ncnn::Mat in;
         resize_bilinear(img, in, ws, hs);
-        ncnn::Extractor ex = Pnet.create_extractor();
+        ncnn::Extractor ex = Pnet->create_extractor();
         ex.set_num_threads(num_threads);
         ex.set_light_mode(true);
         ex.input("data", in);
@@ -394,7 +346,7 @@ void mtcnn::CFaceDetection::RNet(){
         copy_cut_border(img, tempIm, (*it).y1, img_h-(*it).y2, (*it).x1, img_w-(*it).x2);
         ncnn::Mat in;
         resize_bilinear(tempIm, in, 24, 24);
-        ncnn::Extractor ex = Rnet.create_extractor();
+        ncnn::Extractor ex = Rnet->create_extractor();
         ex.set_num_threads(num_threads);
         ex.set_light_mode(true);
         ex.input("data", in);
@@ -418,7 +370,7 @@ void mtcnn::CFaceDetection::ONet(){
         copy_cut_border(img, tempIm, (*it).y1, img_h-(*it).y2, (*it).x1, img_w-(*it).x2);
         ncnn::Mat in;
         resize_bilinear(tempIm, in, 48, 48);
-        ncnn::Extractor ex = Onet.create_extractor();
+        ncnn::Extractor ex = Onet->create_extractor();
         ex.set_num_threads(num_threads);
         ex.set_light_mode(true);
         ex.input("data", in);

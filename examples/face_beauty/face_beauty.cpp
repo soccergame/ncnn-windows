@@ -9,16 +9,13 @@
 #include <fstream>
 #include <time.h>
 #include <iostream>
-#include "AlgorithmUtils.h"
+#include "dnhpx_algorithm_utils.h"
+#include "dnhpx_face_normalization.h"
+#include "dnhpx_error_code.h"
 
 #define GLOG_NO_ABBREVIATED_SEVERITIES
 
 #include "face_beauty.h"
-#include "NormFaceImage.h"
-#include "autoarray.h"
-#include "ErrorCodeDef.h"
-#include "net.h"
-
 
 #ifndef _WIN32
 #define _MAX_PATH 260
@@ -42,10 +39,10 @@ int __stdcall GetFaceBeautyScore(BeautyHandle handle,
     int height, int channel, float &beauty_score)
 {
     if (image_data == 0 || width <= 0 || height <= 0)
-        return  INVALID_INPUT;
+        return  DNHPX_INVALID_INPUT;
 
     if (1 != channel && 3 != channel)
-        return INVALID_IMAGE_FORMAT;
+        return DNHPX_INVALID_IMAGE_FORMAT;
 
     int nRet = 0;
     clock_t count;
@@ -53,7 +50,7 @@ int __stdcall GetFaceBeautyScore(BeautyHandle handle,
     {
         ncnn::Mat ncnn_face_img(256, 256, 3, 4u);
         if (ncnn_face_img.empty())
-            return INVALID_IMAGE_FORMAT;
+            return DNHPX_INVALID_IMAGE_FORMAT;
 
         int size = width * height;
         if (channel == 3) {
@@ -74,8 +71,8 @@ int __stdcall GetFaceBeautyScore(BeautyHandle handle,
             memcpy(ptr2, ptr0, sizeof(float) * 65535);
         }
 
-        ncnn::Net *pCaffeNet = reinterpret_cast<ncnn::Net *>(handle);
-        ncnn::Extractor ex = pCaffeNet->create_extractor();
+        dnhpx::CAlgorithmDomain* pCaffeNet = reinterpret_cast<dnhpx::CAlgorithmDomain*>(handle);
+        ncnn::Extractor ex = pCaffeNet->get_model()->create_extractor();
         ex.set_light_mode(g_light_mode);
         ex.set_num_threads(g_num_threads);
 
@@ -156,45 +153,8 @@ int __stdcall InitFaceBeauty(const char *szNetName,
         else
             strDllPath += FACE_BEAUTY_MODEL_NAME;
 
-        std::fstream fileModel;
-        fileModel.open(strDllPath.c_str(), std::fstream::in | std::fstream::binary);
-        if (false == fileModel.is_open())
-            return 1;
-
-        fileModel.seekg(0, std::fstream::end);
-        int dataSize = int(fileModel.tellg());
-        fileModel.seekg(0, std::fstream::beg);
-
-        AutoArray<char> encryptedData(dataSize);
-        fileModel.read(encryptedData.begin(), dataSize);
-        fileModel.close();
-
-        int *pBuffer = reinterpret_cast<int *>(encryptedData.begin());
-        // encrypt data by shift left		
-        int numOfData = dataSize / sizeof(pBuffer[0]);
-        for (int i = 0; i < numOfData; ++i)
-        {
-            int tempData = pBuffer[i];
-            pBuffer[i] = dnhpx::ror(static_cast<unsigned int>(tempData),
-                dnhpx::g_shiftBits);
-        }
-
-        const int modelnumber = pBuffer[0];
-        std::vector<int> protoTxtLen, modelSize;
-        for (int i = 0; i < modelnumber; ++i)
-        {
-            protoTxtLen.push_back(pBuffer[2 * i + 1]);
-            modelSize.push_back(pBuffer[2 * i + 2]);
-        }
-        char *pParamBuf = encryptedData.begin() + 
-            sizeof(int) * (2 * modelnumber + 1);
-        pWeightBuf.resize(modelSize[0]);
-        memcpy(pWeightBuf.begin(), pParamBuf + protoTxtLen[0],
-            modelSize[0] * sizeof(unsigned char));
-
-        ncnn::Net *pCaffeNet = new ncnn::Net();
-        pCaffeNet->load_param_mem(pParamBuf);;
-        pCaffeNet->load_model(pWeightBuf.begin());
+        dnhpx::CAlgorithmDomain* pCaffeNet = new dnhpx::CAlgorithmDomain();
+        pCaffeNet->init(strDllPath.c_str());
 
         g_num_threads = num_threads;
         g_light_mode = light_mode;
@@ -268,9 +228,9 @@ int __stdcall InitOLDFaceBeauty(const char *szParamName,
         else
             strBinPath += FACE_BEAUTY_BIN_NAME;
 
-        ncnn::Net *pCaffeNet = new ncnn::Net();
-        pCaffeNet->load_param(strParamPath.c_str());
-        pCaffeNet->load_model(strBinPath.c_str());
+        dnhpx::CAlgorithmDomain* pCaffeNet = new dnhpx::CAlgorithmDomain();
+        pCaffeNet->init(std::vector<std::string>(1, strParamPath),
+            std::vector<std::string>(1, strBinPath));
 
         g_num_threads = num_threads;
         g_light_mode = light_mode;
@@ -312,7 +272,7 @@ int __stdcall InitOLDFaceBeauty(const char *szParamName,
 
 int __stdcall UninitFaceBeauty(BeautyHandle handle)
 {
-    ncnn::Net *pCaffeNet = reinterpret_cast<ncnn::Net *>(handle);
+    dnhpx::CAlgorithmDomain* pCaffeNet = reinterpret_cast<dnhpx::CAlgorithmDomain*>(handle);
     pCaffeNet->clear();
 	delete pCaffeNet;
 

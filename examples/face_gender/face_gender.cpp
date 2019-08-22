@@ -17,7 +17,6 @@
 #include "dnhpx_face_normalization.h"
 #include "dnhpx_auto_array.h"
 #include "dnhpx_error_code.h"
-#include "net.h"
 
 
 #ifndef _WIN32
@@ -89,8 +88,8 @@ int __stdcall GetFaceGenderScore(DNHPXFaceAttHandle handle,
         //count = clock() - count;
         //std::cout << "Norm: " << count << std::endl;
 
-        ncnn::Net *pCaffeNet = reinterpret_cast<ncnn::Net *>(handle);
-        ncnn::Extractor ex = pCaffeNet->create_extractor();
+        dnhpx::CAlgorithmDomain* pCaffeNet = reinterpret_cast<dnhpx::CAlgorithmDomain*>(handle);
+        ncnn::Extractor ex = pCaffeNet->get_model()->create_extractor();
         ex.set_light_mode(g_light_mode);
         ex.set_num_threads(g_num_threads);
 
@@ -216,49 +215,8 @@ int __stdcall InitFaceGender(const char *szNetName,
         else
             strDllPath += FACE_GENDER_MODEL_NAME;
 
-        std::fstream fileModel;
-        fileModel.open(strDllPath.c_str(), std::fstream::in | std::fstream::binary);
-        if (false == fileModel.is_open())
-            return 1;
-
-        fileModel.seekg(0, std::fstream::end);
-        int dataSize = int(fileModel.tellg());
-        fileModel.seekg(0, std::fstream::beg);
-
-        //CMyFile fileModel(strDllPath.c_str(), CMyFile::modeRead);
-        //int dataSize = static_cast<int>(fileModel.GetLength());
-        dnhpx::AutoArray<char> encryptedData(dataSize);
-        //fileModel.Read(encryptedData, dataSize);
-        fileModel.read(encryptedData.begin(), dataSize);
-        //fileModel.Close();
-        fileModel.close();
-
-        int *pBuffer = reinterpret_cast<int *>(encryptedData.begin());
-        // encrypt data by shift left		
-        int numOfData = dataSize / sizeof(pBuffer[0]);
-        for (int i = 0; i < numOfData; ++i)
-        {
-            int tempData = pBuffer[i];
-            pBuffer[i] = dnhpx::ror(static_cast<unsigned int>(tempData),
-                dnhpx::g_shiftBits);
-        }
-
-        const int modelnumber = pBuffer[0];
-        std::vector<int> protoTxtLen, modelSize;
-        for (int i = 0; i < modelnumber; ++i)
-        {
-            protoTxtLen.push_back(pBuffer[2 * i + 1]);
-            modelSize.push_back(pBuffer[2 * i + 2]);
-        }
-        char *pParamBuf = encryptedData.begin() + 
-            sizeof(int) * (2 * modelnumber + 1);
-        pWeightBuf.resize(modelSize[0]);
-        memcpy(pWeightBuf.begin(), pParamBuf + protoTxtLen[0],
-            modelSize[0] * sizeof(unsigned char));
-
-        ncnn::Net *pCaffeNet = new ncnn::Net();
-        pCaffeNet->load_param_mem(pParamBuf);;
-        pCaffeNet->load_model(pWeightBuf.begin());
+        dnhpx::CAlgorithmDomain* pCaffeNet = new dnhpx::CAlgorithmDomain();
+        pCaffeNet->init(strDllPath.c_str());
 
         g_num_threads = num_threads;
         g_light_mode = light_mode;
@@ -333,9 +291,11 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
         else
             strBinPath += FACE_GENDER_BIN_NAME;
 
-        ncnn::Net *pCaffeNet = new ncnn::Net();
-        pCaffeNet->load_param(strParamPath.c_str());
-        pCaffeNet->load_model(strBinPath.c_str());
+        dnhpx::CAlgorithmDomain* pCaffeNet = new dnhpx::CAlgorithmDomain();
+        pCaffeNet->init(std::vector<std::string>(1, strParamPath),
+            std::vector<std::string>(1, strBinPath));
+        /*pCaffeNet->load_param(strParamPath.c_str());
+        pCaffeNet->load_model(strBinPath.c_str());*/
 
         g_num_threads = num_threads;
         g_light_mode = light_mode;
@@ -379,7 +339,7 @@ int __stdcall UninitFaceGender(DNHPXFaceAttHandle handle)
             // 初始化变量修改
             g_bFaceGenderInited = false;
 
-            ncnn::Net *pCaffeNet = reinterpret_cast<ncnn::Net *>(handle);
+            dnhpx::CAlgorithmDomain* pCaffeNet = reinterpret_cast<dnhpx::CAlgorithmDomain *>(handle);
             pCaffeNet->clear();
             delete pCaffeNet;
         }

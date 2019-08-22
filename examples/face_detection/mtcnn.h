@@ -15,7 +15,7 @@
 
 #include "dnhpx_error_code.h"
 #include "dnhpx_algorithm_utils.h"
-#include "dnhpx_smart_ptr.h"
+#include "dnhpx_auto_array.h"
 
 using namespace std;
 //using namespace cv;
@@ -38,7 +38,7 @@ namespace mtcnn {
     public:
         CFaceDetection();
         CFaceDetection(const string& model_path);
-        CFaceDetection(const std::vector<std::string> param_files, const std::vector<std::string> bin_files);
+        //CFaceDetection(const std::vector<std::string> param_files, const std::vector<std::string> bin_files);
         ~CFaceDetection();
 
         int Init(const string& model_name);
@@ -60,7 +60,7 @@ namespace mtcnn {
         void PNet();
         void RNet();
         void ONet();
-        ncnn::Net Pnet, Rnet, Onet;
+        ncnn::Net *Pnet, *Rnet, *Onet;
         ncnn::Mat img;
         const float nms_threshold[3] = { 0.5f, 0.7f, 0.7f };
 
@@ -79,9 +79,7 @@ namespace mtcnn {
         int count = 1;
         int num_threads = 4;
 
-        dnhpx::smart_ptr<unsigned char> m_PnetWeight;
-        dnhpx::smart_ptr<unsigned char> m_RnetWeight;
-        dnhpx::smart_ptr<unsigned char> m_OnetWeight;
+        dnhpx::CAlgorithmDomain al_domain;
     };
 }
 
