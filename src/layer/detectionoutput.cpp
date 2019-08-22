@@ -33,6 +33,10 @@ int DetectionOutput::load_param(const ParamDict& pd)
     nms_top_k = pd.get(2, 300);
     keep_top_k = pd.get(3, 100);
     confidence_threshold = pd.get(4, 0.5f);
+    variances[0] = pd.get(5, 0.1f);
+    variances[1] = pd.get(6, 0.1f);
+    variances[2] = pd.get(7, 0.2f);
+    variances[3] = pd.get(8, 0.2f);
 
     return 0;
 }
@@ -147,11 +151,12 @@ int DetectionOutput::forward(const std::vector<Mat>& bottom_blobs, std::vector<M
     const Mat& confidence = bottom_blobs[1];
     const Mat& priorbox = bottom_blobs[2];
 
-    const int num_prior = priorbox.w / 4;
+    bool mxnet_ssd_style = num_class == -233;
 
-    int num_class_copy = num_class;
-    if (num_class_copy == -233)
-        num_class_copy = priorbox.w / num_prior;
+    // mxnet-ssd _contrib_MultiBoxDetection
+    const int num_prior = mxnet_ssd_style ? priorbox.h : priorbox.w / 4;
+
+    int num_class_copy = mxnet_ssd_style ? confidence.h : num_class;
 
     // apply location with priorbox
     Mat bboxes;
@@ -161,14 +166,14 @@ int DetectionOutput::forward(const std::vector<Mat>& bottom_blobs, std::vector<M
 
     const float* location_ptr = location;
     const float* priorbox_ptr = priorbox.row(0);
-    const float* variance_ptr = priorbox.row(1);
+    const float* variance_ptr = mxnet_ssd_style ? 0 : priorbox.row(1);
 
     #pragma omp parallel for num_threads(opt.num_threads)
     for (int i = 0; i < num_prior; i++)
     {
         const float* loc = location_ptr + i * 4;
         const float* pb = priorbox_ptr + i * 4;
-        const float* var = variance_ptr + i * 4;
+        const float* var = variance_ptr ? variance_ptr + i * 4 : variances;
 
         float* bbox = bboxes.row(i);
 
@@ -205,7 +210,10 @@ int DetectionOutput::forward(const std::vector<Mat>& bottom_blobs, std::vector<M
 
         for (int j = 0; j < num_prior; j++)
         {
-            float score = confidence[j * num_class_copy + i];
+            // prob data layout
+            // caffe-ssd = num_class x num_prior
+            // mxnet-ssd = num_prior x num_class
+            float score = mxnet_ssd_style ? confidence[i * num_prior + j] : confidence[j * num_class_copy + i];
 
             if (score > confidence_threshold)
             {
@@ -264,6 +272,8 @@ int DetectionOutput::forward(const std::vector<Mat>& bottom_blobs, std::vector<M
 
     // fill result
     int num_detected = bbox_rects.size();
+    if (num_detected == 0)
+        return 0;
 
     Mat& top_blob = top_blobs[0];
     top_blob.create(6, num_detected, 4u, opt.blob_allocator);

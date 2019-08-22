@@ -1,4 +1,4 @@
-﻿// Tencent is pleased to support the open source community by making ncnn available.
+// Tencent is pleased to support the open source community by making ncnn available.
 //
 // Copyright (C) 2017 THL A29 Limited, a Tencent company. All rights reserved.
 //
@@ -15,40 +15,40 @@
 #include <stdio.h>
 #include <algorithm>
 #include <vector>
-#include <opencv2/opencv.hpp>
-#include<functional>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+#include "platform.h"
 #include "net.h"
-#include <time.h>
-
-#define VIDEO_MODEL 0
-
-using namespace std;
-using namespace cv;
-
-ncnn::Net squeezenet;
-const float mean_vals[3] = { 104.f, 117.f, 123.f };
+#if NCNN_VULKAN
+#include "gpu.h"
+#endif // NCNN_VULKAN
 
 static int detect_squeezenet(const cv::Mat& bgr, std::vector<float>& cls_scores)
 {
+    ncnn::Net squeezenet;
+
+#if NCNN_VULKAN
+    squeezenet.opt.use_vulkan_compute = true;
+#endif // NCNN_VULKAN
+
+    squeezenet.load_param("squeezenet_v1.1.param");
+    squeezenet.load_model("squeezenet_v1.1.bin");
+
     ncnn::Mat in = ncnn::Mat::from_pixels_resize(bgr.data, ncnn::Mat::PIXEL_BGR, bgr.cols, bgr.rows, 227, 227);
+
+    const float mean_vals[3] = {104.f, 117.f, 123.f};
     in.substract_mean_normalize(mean_vals, 0);
 
     ncnn::Extractor ex = squeezenet.create_extractor();
-    ex.set_light_mode(true);
 
     ex.input("data", in);
-    ncnn::Mat out;
 
-    clock_t start, finish;
-    start = clock();
+    ncnn::Mat out;
     ex.extract("prob", out);
-    finish = clock();
-    double totaltime;
-    totaltime = (double)(finish - start) / CLOCKS_PER_SEC;
-    printf("run time: %f\n", totaltime);
 
     cls_scores.resize(out.w);
-    for (int j = 0; j<out.w; j++)
+    for (int j=0; j<out.w; j++)
     {
         cls_scores[j] = out[j];
     }
@@ -56,126 +56,60 @@ static int detect_squeezenet(const cv::Mat& bgr, std::vector<float>& cls_scores)
     return 0;
 }
 
-static int print_topk(const std::vector<float>& cls_scores, int topk, vector<int>& index_result, vector<float>& score_result)
+static int print_topk(const std::vector<float>& cls_scores, int topk)
 {
     // partial sort topk with index
     int size = cls_scores.size();
     std::vector< std::pair<float, int> > vec;
     vec.resize(size);
-    for (int i = 0; i<size; i++)
+    for (int i=0; i<size; i++)
     {
         vec[i] = std::make_pair(cls_scores[i], i);
     }
 
-    std::partial_sort(vec.begin(), vec.begin() + topk, vec.end(), std::greater< std::pair<float, int> >());
+    std::partial_sort(vec.begin(), vec.begin() + topk, vec.end(),
+                      std::greater< std::pair<float, int> >());
 
     // print topk and score
-    for (int i = 0; i<topk; i++)
+    for (int i=0; i<topk; i++)
     {
         float score = vec[i].first;
         int index = vec[i].second;
-        index_result.push_back(index);
-        score_result.push_back(score);
-
-        //fprintf(stderr, "%d = %f\n", index, score);
+        fprintf(stderr, "%d = %f\n", index, score);
     }
 
     return 0;
 }
 
-
-static void load_labels(string path, vector<string>& labels)
-{
-    FILE* fp = fopen(path.c_str(), "r");
-
-    while (!feof(fp))
-    {
-        char str[1024];
-        fgets(str, 1024, fp);  //��ȡһ��
-        string str_s(str);
-
-        if (str_s.length() > 0)
-        {
-            for (int i = 0; i < str_s.length(); i++)
-            {
-                if (str_s[i] == ' ')
-                {
-                    string strr = str_s.substr(i, str_s.length() - i - 1);
-                    labels.push_back(strr);
-                    i = str_s.length();
-                }
-            }
-        }
-    }
-}
-
-
 int main(int argc, char** argv)
 {
-    squeezenet.load_param("squeezenet_v1.1.param");
-    squeezenet.load_model("squeezenet_v1.1.bin");
-    vector<string> labels;
-    load_labels("synset_words.txt", labels);
-
-#if VIDEO_MODEL
-    VideoCapture cap(1);
-
-    Mat frame;
-    while (1)
+    if (argc != 2)
     {
-        cap >> frame;
-        if (!frame.data)
-            break;
-
-        //ǰ��run squeezenet ����
-        std::vector<float> cls_scores;
-        detect_squeezenet(frame, cls_scores);
-
-        //����ʶ��������ǩ
-        vector<int> index;
-        vector<float> score;
-        print_topk(cls_scores, 3, index, score);
-
-        //ͼ�λ���ʾʶ������
-        for (int i = 0; i < index.size(); i++)
-        {
-            cv::putText(frame, labels[index[i]], Point(10, 10 + 30 * i), CV_FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 100, 0), 2, 2);
-        }
-
-        imshow("frame", frame);
-        waitKey(1);
+        fprintf(stderr, "Usage: %s [imagepath]\n", argv[0]);
+        return -1;
     }
-#else
-    //��������ͼƬ
-    const char* imagepath = "dog.jpg";
-    cv::Mat m = cv::imread(imagepath, CV_LOAD_IMAGE_COLOR);
+
+    const char* imagepath = argv[1];
+
+    cv::Mat m = cv::imread(imagepath, 1);
     if (m.empty())
     {
         fprintf(stderr, "cv::imread %s failed\n", imagepath);
         return -1;
     }
 
-    //ǰ��run squeezenet ����
+#if NCNN_VULKAN
+    ncnn::create_gpu_instance();
+#endif // NCNN_VULKAN
+
     std::vector<float> cls_scores;
     detect_squeezenet(m, cls_scores);
 
-    //����ʶ��������ǩ
-    vector<int> index;
-    vector<float> score;
-    print_topk(cls_scores, 3, index, score);
+#if NCNN_VULKAN
+    ncnn::destroy_gpu_instance();
+#endif // NCNN_VULKAN
 
-    //ͼ�λ���ʾʶ������
-    for (int i = 0; i < index.size(); i++)
-    {
-        cv::putText(m, labels[index[i]], Point(10, 10 + 30 * i), CV_FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 100, 0), 2, 2);
-    }
-
-    imshow("m", m);
-    imwrite("dog_result.jpg", m);
-    waitKey(0);
-#endif
+    print_topk(cls_scores, 3);
 
     return 0;
 }
-
-

@@ -11,17 +11,23 @@
     <Filter Include="src">
       <UniqueIdentifier>{d37b58d9-1cae-4387-a2bb-d9185cbd8200}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\layer">
-      <UniqueIdentifier>{ca0dbbac-2147-4d3b-a4b1-05bc288e748e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\layer\x86">
-      <UniqueIdentifier>{7ae19f23-899d-497f-b779-321aaec3348b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\layer">
-      <UniqueIdentifier>{f4a39307-a8cc-4e8a-821a-510d45454753}</UniqueIdentifier>
+      <UniqueIdentifier>{f8e81d1d-0b8f-43dc-a52b-36a6f090d95a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\layer">
+      <UniqueIdentifier>{4762393d-cebd-4b33-92a6-24f81ee6530b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\layer\arm">
+      <UniqueIdentifier>{8058f05e-0d39-4adf-9fda-a4b56a1bbfa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\layer\arm">
+      <UniqueIdentifier>{9e48a254-68be-4294-a121-fecd23dc88cd}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\layer\x86">
-      <UniqueIdentifier>{8071f182-5c8c-4546-8c05-933d441546b8}</UniqueIdentifier>
+      <UniqueIdentifier>{e4822888-1fb0-44c4-b0b5-103610e62a67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\layer\x86">
+      <UniqueIdentifier>{899c5471-7bcc-4281-8576-6920c35731aa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,7 +40,13 @@
     <ClInclude Include="..\..\src\blob.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\command.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\cpu.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gpu.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\layer.h">
@@ -55,7 +67,16 @@
     <ClInclude Include="..\..\src\opencv.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\option.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\paramdict.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\pipeline.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer_type_enum.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\platform.h">
@@ -77,6 +98,9 @@
       <Filter>include\layer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\layer\bnll.h">
+      <Filter>include\layer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\cast.h">
       <Filter>include\layer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\layer\clip.h">
@@ -127,6 +151,12 @@
     <ClInclude Include="..\..\src\layer\flatten.h">
       <Filter>include\layer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\layer\hardsigmoid.h">
+      <Filter>include\layer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\hardswish.h">
+      <Filter>include\layer</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\layer\innerproduct.h">
       <Filter>include\layer</Filter>
     </ClInclude>
@@ -155,6 +185,9 @@
       <Filter>include\layer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\layer\normalize.h">
+      <Filter>include\layer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\packing.h">
       <Filter>include\layer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\layer\padding.h">
@@ -193,16 +226,25 @@
     <ClInclude Include="..\..\src\layer\reorg.h">
       <Filter>include\layer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\layer\requantize.h">
+      <Filter>include\layer</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\layer\reshape.h">
       <Filter>include\layer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\layer\rnn.h">
       <Filter>include\layer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\layer\roialign.h">
+      <Filter>include\layer</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\layer\roipooling.h">
       <Filter>include\layer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\layer\scale.h">
+      <Filter>include\layer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\selu.h">
       <Filter>include\layer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\layer\shufflechannel.h">
@@ -244,6 +286,171 @@
     <ClInclude Include="..\..\src\layer\yolov3detectionoutput.h">
       <Filter>include\layer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\absval_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\batchnorm_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\bias_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\binaryop_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\cast_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\clip_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\concat_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_1x1.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_1x1_int8.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_2x2.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_3x3.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_3x3_int8.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_4x4.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_5x5.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_5x5_int8.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_7x7.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_7x7_int8.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_sgemm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolution_sgemm_int8.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolutiondepthwise_3x3.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolutiondepthwise_3x3_int8.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolutiondepthwise_5x5.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\convolutiondepthwise_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\crop_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\deconvolution_3x3.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\deconvolution_4x4.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\deconvolution_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\deconvolutiondepthwise_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\dequantize_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\dropout_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\eltwise_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\flatten_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\hardsigmoid_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\hardswish_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\innerproduct_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\interp_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\lrn_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\neon_mathfun.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\neon_mathfun_tanh.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\packing_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\padding_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\pooling_2x2.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\pooling_3x3.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\pooling_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\prelu_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\quantize_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\relu_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\requantize_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\scale_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\selu_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\sigmoid_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\softmax_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\tanh_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\arm\unaryop_arm.h">
+      <Filter>include\layer\arm</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\layer\x86\avx_mathfun.h">
       <Filter>include\layer\x86</Filter>
     </ClInclude>
@@ -260,6 +467,21 @@
       <Filter>include\layer\x86</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\layer\x86\convolution_5x5.h">
+      <Filter>include\layer\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\x86\convolution_5x5_int8.h">
+      <Filter>include\layer\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\x86\convolution_7x7.h">
+      <Filter>include\layer\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\x86\convolution_7x7_int8.h">
+      <Filter>include\layer\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\x86\convolution_sgemm.h">
+      <Filter>include\layer\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer\x86\convolution_sgemm_int8.h">
       <Filter>include\layer\x86</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\layer\x86\convolution_x86.h">
@@ -283,7 +505,10 @@
     <ClInclude Include="..\..\src\layer_registry.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\layer_type_enum.h">
+    <ClInclude Include="..\..\src\layer_shader_registry.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\layer_shader_spv_data.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -297,7 +522,13 @@
     <ClCompile Include="..\..\src\blob.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\command.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\cpu.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gpu.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\layer.cpp">
@@ -309,6 +540,9 @@
     <ClCompile Include="..\..\src\mat_pixel.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\mat_pixel_resize.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\modelbin.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -318,7 +552,13 @@
     <ClCompile Include="..\..\src\opencv.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\option.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\paramdict.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\pipeline.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\layer\absval.cpp">
@@ -337,6 +577,9 @@
       <Filter>src\layer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\layer\bnll.cpp">
+      <Filter>src\layer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\cast.cpp">
       <Filter>src\layer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\layer\clip.cpp">
@@ -387,6 +630,12 @@
     <ClCompile Include="..\..\src\layer\flatten.cpp">
       <Filter>src\layer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\layer\hardsigmoid.cpp">
+      <Filter>src\layer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\hardswish.cpp">
+      <Filter>src\layer</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\layer\innerproduct.cpp">
       <Filter>src\layer</Filter>
     </ClCompile>
@@ -415,6 +664,9 @@
       <Filter>src\layer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\layer\normalize.cpp">
+      <Filter>src\layer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\packing.cpp">
       <Filter>src\layer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\layer\padding.cpp">
@@ -453,16 +705,25 @@
     <ClCompile Include="..\..\src\layer\reorg.cpp">
       <Filter>src\layer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\layer\requantize.cpp">
+      <Filter>src\layer</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\layer\reshape.cpp">
       <Filter>src\layer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\layer\rnn.cpp">
       <Filter>src\layer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\layer\roialign.cpp">
+      <Filter>src\layer</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\layer\roipooling.cpp">
       <Filter>src\layer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\layer\scale.cpp">
+      <Filter>src\layer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\selu.cpp">
       <Filter>src\layer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\layer\shufflechannel.cpp">
@@ -503,6 +764,108 @@
     </ClCompile>
     <ClCompile Include="..\..\src\layer\yolov3detectionoutput.cpp">
       <Filter>src\layer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\absval_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\batchnorm_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\bias_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\binaryop_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\cast_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\clip_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\concat_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\convolution_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\convolutiondepthwise_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\crop_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\deconvolution_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\deconvolutiondepthwise_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\dequantize_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\dropout_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\eltwise_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\flatten_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\hardsigmoid_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\hardswish_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\innerproduct_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\interp_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\lrn_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\packing_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\padding_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\pooling_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\prelu_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\quantize_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\relu_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\requantize_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\scale_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\selu_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\sigmoid_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\softmax_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\tanh_arm.cpp">
+      <Filter>src\layer\arm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\layer\arm\unaryop_arm.cpp">
+      <Filter>src\layer\arm</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\layer\x86\convolution_x86.cpp">
       <Filter>src\layer\x86</Filter>

@@ -13,6 +13,8 @@
 // specific language governing permissions and limitations under the License.
 
 #include "deconvolutiondepthwise.h"
+#include <algorithm>
+#include "layer_type.h"
 
 namespace ncnn {
 
@@ -33,11 +35,15 @@ int DeconvolutionDepthWise::load_param(const ParamDict& pd)
     dilation_h = pd.get(12, dilation_w);
     stride_w = pd.get(3, 1);
     stride_h = pd.get(13, stride_w);
-    pad_w = pd.get(4, 0);
-    pad_h = pd.get(14, pad_w);
+    pad_left = pd.get(4, 0);
+    pad_right = pd.get(15, pad_left);
+    pad_top = pd.get(14, pad_left);
+    pad_bottom = pd.get(16, pad_top);
     bias_term = pd.get(5, 0);
     weight_data_size = pd.get(6, 0);
     group = pd.get(7, 1);
+    activation_type = pd.get(9, 0);
+    activation_params = pd.get(10, Mat());
 
     return 0;
 }
@@ -81,7 +87,7 @@ int DeconvolutionDepthWise::forward(const Mat& bottom_blob, Mat& top_blob, const
     int outh = (h - 1) * stride_h + kernel_extent_h;
 
     Mat top_blob_bordered;
-    if (pad_w > 0 || pad_h > 0)
+    if (pad_left > 0 || pad_right > 0 || pad_top > 0 || pad_bottom > 0)
     {
         top_blob_bordered.create(outw, outh, num_output, elemsize, opt.workspace_allocator);
         if (top_blob_bordered.empty())
@@ -144,6 +150,54 @@ int DeconvolutionDepthWise::forward(const Mat& bottom_blob, Mat& top_blob, const
                     }
                 }
             }
+
+
+            if (activation_type == 1)
+            {
+                float* outptr = m;
+                int size = outw * outh;
+
+                for (int i = 0; i < size; i++)
+                {
+                    outptr[i] = std::max(outptr[i], 0.f);
+                }
+            }
+            else if (activation_type == 2)
+            {
+                float* outptr = m;
+                int size = outw * outh;
+                float slope = activation_params[0];
+
+                for (int i = 0; i < size; i++)
+                {
+                    outptr[i] = outptr[i] > 0.f ? outptr[i] : outptr[i] * slope;
+                }
+            }
+            else if (activation_type == 3)
+            {
+                float* outptr = m;
+                int size = outw * outh;
+                float min = activation_params[0];
+                float max = activation_params[1];
+
+                for (int i = 0; i < size; i++)
+                {
+                    if (outptr[i] < min)
+                        outptr[i] = min;
+                    if (outptr[i] > max)
+                        outptr[i] = max;
+                }
+            }
+            else if (activation_type == 4)
+            {
+                float* outptr = m;
+                int size = outw * outh;
+
+                for (int i = 0; i < size; i++)
+                {
+                    outptr[i] = 1.f / (1.f + exp(-outptr[i]));
+                }
+            }
         }
     }
     else
@@ -152,14 +206,18 @@ int DeconvolutionDepthWise::forward(const Mat& bottom_blob, Mat& top_blob, const
         const int channels_g = channels / group;
         const int num_output_g = num_output / group;
 
+#ifdef _WIN32
         #pragma omp parallel for num_threads(opt.num_threads)
+#else // _WIN32
+        #pragma omp parallel for collapse(2) num_threads(opt.num_threads)
+#endif // _WIN32
         for (int g = 0; g < group; g++)
         {
-            const float* weight_data_ptr = (const float*)weight_data + maxk * channels_g * num_output_g * g;
             for (int p = 0; p < num_output_g; p++)
             {
                 Mat out = top_blob_bordered.channel(g * num_output_g + p);
 
+                const float* weight_data_ptr = (const float*)weight_data + maxk * channels_g * num_output_g * g;
                 const float bias = bias_term ? bias_data[g * num_output_g + p] : 0.f;
 
                 out.fill(bias);
@@ -187,13 +245,60 @@ int DeconvolutionDepthWise::forward(const Mat& bottom_blob, Mat& top_blob, const
                         }
                     }
                 }
+
+                if (activation_type == 1)
+                {
+                    float* outptr = out;
+                    int size = outw * outh;
+
+                    for (int i = 0; i < size; i++)
+                    {
+                        outptr[i] = std::max(outptr[i], 0.f);
+                    }
+                }
+                else if (activation_type == 2)
+                {
+                    float* outptr = out;
+                    int size = outw * outh;
+                    float slope = activation_params[0];
+
+                    for (int i = 0; i < size; i++)
+                    {
+                        outptr[i] = outptr[i] > 0.f ? outptr[i] : outptr[i] * slope;
+                    }
+                }
+                else if (activation_type == 3)
+                {
+                    float* outptr = out;
+                    int size = outw * outh;
+                    float min = activation_params[0];
+                    float max = activation_params[1];
+
+                    for (int i = 0; i < size; i++)
+                    {
+                        if (outptr[i] < min)
+                            outptr[i] = min;
+                        if (outptr[i] > max)
+                            outptr[i] = max;
+                    }
+                }
+                else if (activation_type == 4)
+                {
+                    float* outptr = out;
+                    int size = outw * outh;
+
+                    for (int i = 0; i < size; i++)
+                    {
+                        outptr[i] = 1.f / (1.f + exp(-outptr[i]));
+                    }
+                }
             }
         }
     }
 
-    if (pad_w > 0 || pad_h > 0)
+    if (pad_left > 0 || pad_right > 0 || pad_top > 0 || pad_bottom > 0)
     {
-        copy_cut_border(top_blob_bordered, top_blob, pad_h, pad_h, pad_w, pad_w, opt.blob_allocator, opt.num_threads);
+        copy_cut_border(top_blob_bordered, top_blob, pad_top, pad_bottom, pad_left, pad_right, opt);
         if (top_blob.empty())
             return -100;
 

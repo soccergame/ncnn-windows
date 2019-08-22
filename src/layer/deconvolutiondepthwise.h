@@ -39,12 +39,18 @@ public:
     int dilation_h;
     int stride_w;
     int stride_h;
-    int pad_w;
-    int pad_h;
+    int pad_left;
+    int pad_right;
+    int pad_top;
+    int pad_bottom;
     int bias_term;
 
     int weight_data_size;
     int group;
+
+    // 0=none 1=relu 2=leakyrelu 3=clip 4=sigmoid
+    int activation_type;
+    Mat activation_params;
 
     // model
     Mat weight_data;

@@ -1,8 +1,8 @@
 LIBRARY	"face_detection"
 EXPORTS
-	DNHPXSetFaceDetectLibPath	@1
-	DNHPXInitFaceDetect			@2
-	DNHPXMaxFaceDetect	        @3
-	DNHPXUninitFaceDetect		@4
-	DNHPXFaceDetect		        @5
-    DNHPXFaceBuffering          @6
+	DNHPXSetFaceAlignmentLibPath	@1
+	DNHPXInitFaceAlignment			@2
+	DNHPXUninitFaceAlignment	    @3
+	DNHPXFaceAlignment		        @4
+	DNHPXFaceAlignmentEx		    @5
+    DNHPXAlignmentFromFace          @6
