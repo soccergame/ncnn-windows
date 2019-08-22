@@ -9,19 +9,25 @@
 #include <fstream>
 #include "mtcnn.h"
 
-bool cmpScore(mtcnn::Bbox lsh, mtcnn::Bbox rsh) {
-	if (lsh.score < rsh.score)
-		return true;
-	else
-		return false;
+namespace {
+    bool cmpScore(mtcnn::Bbox lsh, mtcnn::Bbox rsh) {
+        if (lsh.score < rsh.score)
+            return true;
+        else
+            return false;
+    }
+
+    bool cmpArea(mtcnn::Bbox lsh, mtcnn::Bbox rsh) {
+        if (lsh.area < rsh.area)
+            return false;
+        else
+            return true;
+    }
+
+    dnhpx::Logger logger(_T("./mtcnn_cpp.log"), dnhpx::Logger::TypeError);
 }
 
-bool cmpArea(mtcnn::Bbox lsh, mtcnn::Bbox rsh) {
-    if (lsh.area < rsh.area)
-        return false;
-    else
-        return true;
-}
+
 
 
 //MTCNN::MTCNN(){}
@@ -234,7 +240,8 @@ void mtcnn::CFaceDetection::nms(std::vector<Bbox> &boundingBox_, const float ove
 }
 void mtcnn::CFaceDetection::refine(vector<Bbox> &vecBbox, const int &height, const int &width, bool square){
     if(vecBbox.empty()){
-        cout<<"Bbox is empty!!"<<endl;
+        logger.RecordLog(dnhpx::Logger::TypeError, _T("%s\n"), _T("Bbox is empty!!"));
+        //cout<<"Bbox is empty!!"<<endl;
         return;
     }
     float bbw=0, bbh=0, maxSide=0;

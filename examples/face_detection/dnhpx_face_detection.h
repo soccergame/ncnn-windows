@@ -5,7 +5,6 @@
 #define __stdcall
 #endif
 
-//#include <opencv2/core/core.hpp>
 #include "dnhpx_utility.h"
 
 #ifdef __cplusplus

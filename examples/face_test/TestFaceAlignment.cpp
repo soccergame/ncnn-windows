@@ -115,7 +115,8 @@ int main(int argc, char** argv)
         // Face detection
         timeCount.Start();
         DNHPXFaceRect face_box;
-        retValue = DNHPXMaxFaceDetect(hDetect, oriImgData, face_box);
+        retValue = DNHPXMaxFaceDetect(hDetect, oriImgData.data, oriImgData.cols, 
+            oriImgData.rows, face_box);
         if (0 != retValue)
             throw retValue;
 

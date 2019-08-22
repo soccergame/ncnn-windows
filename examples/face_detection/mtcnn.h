@@ -1,21 +1,17 @@
 
-#pragma once
-
 #ifndef __MTCNN_NCNN_H__
 #define __MTCNN_NCNN_H__
 #include "net.h"
 //#include <opencv2/opencv.hpp>
 #include <string>
 #include <vector>
-#include <time.h>
 #include <algorithm>
 #include <map>
-#include <iostream>
-#include <math.h>
 
 #include "dnhpx_error_code.h"
 #include "dnhpx_algorithm_utils.h"
 #include "dnhpx_auto_array.h"
+#include "dnhpx_utility.h"
 
 using namespace std;
 //using namespace cv;
@@ -82,9 +78,5 @@ namespace mtcnn {
         dnhpx::CAlgorithmDomain al_domain;
     };
 }
-
-
-
-
 
 #endif //__MTCNN_NCNN_H__

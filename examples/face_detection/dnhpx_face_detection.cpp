@@ -1,8 +1,11 @@
-﻿#include "dnhpx_face_detection.h"
+﻿
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+
+#include "dnhpx_face_detection.h"
 #include "mtcnn.h"
 #include "dnhpx_error_code.h"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/highgui.hpp"
 
 #if defined( _ANDROID) || defined(_IOS) || defined(__GNUC__)
 #include <cerrno>
