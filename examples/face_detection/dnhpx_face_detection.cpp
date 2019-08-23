@@ -3,6 +3,8 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 
+#include <exception>
+
 #include "dnhpx_face_detection.h"
 #include "mtcnn.h"
 #include "dnhpx_error_code.h"
@@ -84,8 +86,9 @@ int __stdcall DNHPXInitFaceDetect(DNHPXFaceDetHandle* pHandle, const char *model
         strncpy(g_szFaceDetectionDLLPath, "./", _MAX_PATH);
 #endif
 
+#ifndef NO_EXCEPTIONS
     try {
-
+#endif
         std::string strDllPath;
         strDllPath = g_szFaceDetectionDLLPath;
         if (NULL != model_name)
@@ -100,7 +103,9 @@ int __stdcall DNHPXInitFaceDetect(DNHPXFaceDetHandle* pHandle, const char *model
         res = pEngineData->pFaceDetect->Init(strDllPath);
         if (DNHPX_OK != res) {
             delete pEngineData;
+#ifndef NO_EXCEPTIONS
             throw res;
+#endif
         }
 #else
         pEngineData->pFaceDetect = new mtcnn::CFaceDetection(g_szFaceDetectionDLLPath);
@@ -115,6 +120,8 @@ int __stdcall DNHPXInitFaceDetect(DNHPXFaceDetHandle* pHandle, const char *model
         ++g_FaceDetectionInitCount;
 
         *pHandle = reinterpret_cast<DNHPXFaceDetHandle>(pEngineData);
+
+#ifndef NO_EXCEPTIONS
     }
     catch (const std::bad_alloc &)
     {
@@ -128,6 +135,7 @@ int __stdcall DNHPXInitFaceDetect(DNHPXFaceDetHandle* pHandle, const char *model
     {
         res = -3;
     }
+#endif
 
     return res;
 }
@@ -153,7 +161,9 @@ int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const unsigned char*
 
     int res = DNHPX_OK;
 
+#ifndef NO_EXCEPTIONS
     try {
+#endif
         FaceDetectEngineData *pEngineData = 
             reinterpret_cast<FaceDetectEngineData *>(handle);
 
@@ -182,6 +192,7 @@ int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const unsigned char*
             face_box.key_points[i].x = finalBbox[0].ppoint[i];
             face_box.key_points[i].y = finalBbox[0].ppoint[i + 5];
         }
+#ifndef NO_EXCEPTIONS
     }
     catch (const std::bad_alloc &)
     {
@@ -195,6 +206,7 @@ int __stdcall DNHPXMaxFaceDetect(DNHPXFaceDetHandle handle, const unsigned char*
     {
         res = -3;
     }
+#endif
 
     return res;
 }
@@ -219,7 +231,9 @@ int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const unsigned char* im
 
     int res = DNHPX_OK;
 
+#ifndef NO_EXCEPTIONS
     try {
+#endif
         FaceDetectEngineData *pEngineData =
             reinterpret_cast<FaceDetectEngineData *>(handle);
 
@@ -252,7 +266,7 @@ int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const unsigned char* im
                 face_box[j].key_points[i].y = finalBbox[j].ppoint[i + 5];
             }
         }
-        
+#ifndef NO_EXCEPTIONS       
     }
     catch (const std::bad_alloc &)
     {
@@ -266,6 +280,7 @@ int __stdcall DNHPXFaceDetect(DNHPXFaceDetHandle handle, const unsigned char* im
     {
         res = -3;
     }
+#endif
 
     return res;
 }
@@ -307,7 +322,9 @@ int __stdcall DNHPXFaceBuffering(const unsigned char* input_image,
 
     int res = DNHPX_OK;
 
+#ifndef NO_EXCEPTIONS
     try {
+#endif
         cv::Mat input = cv::Mat(image_height, image_width, CV_8UC3, (void *)input_image);
         cv::Mat output = cv::Mat(image_height, image_width, CV_8UC3, output_image);
         if (true == param.use_filter_only) {
@@ -345,7 +362,7 @@ int __stdcall DNHPXFaceBuffering(const unsigned char* input_image,
             //
             input_float_image.convertTo(output, CV_8U);
         }
-        
+#ifndef NO_EXCEPTIONS     
     }
     catch (const std::bad_alloc&)
     {
@@ -359,6 +376,7 @@ int __stdcall DNHPXFaceBuffering(const unsigned char* input_image,
     {
         res = DNHPX_GENERIC_ERROR;
     }
+#endif
 
     return res;
 }

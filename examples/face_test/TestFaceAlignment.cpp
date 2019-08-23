@@ -8,7 +8,9 @@
 #include <string>
 #include <memory>
 #include <assert.h>
-#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
 
 #ifndef _WIN32
 #include<unistd.h> 
@@ -85,9 +87,10 @@ int main(int argc, char** argv)
     float maxR = 0;
     int label = 0;
     dnhpx::CTimeCount timeCount;
-    
+#ifndef NO_EXCEPTIONS  
     try
     {
+#endif
         // Initialize        
         retValue = DNHPXSetFaceAlignmentLibPath(pModulePath);  
         DNHPXFaceAliHandle align_handle;
@@ -95,7 +98,9 @@ int main(int argc, char** argv)
         //retValue |= InitDeepFeat("NNModel.dat", gpuId, &hAge);
         if (0 != retValue) {
             std::cout << "Alignment error Code: " << retValue << std::endl;
+#ifndef NO_EXCEPTIONS  
             throw retValue;
+#endif
         }
 
         retValue = DNHPXSetFaceDetectLibPath(pModulePath);
@@ -104,7 +109,9 @@ int main(int argc, char** argv)
         if (DNHPX_OK != retValue) {
             std::cout << "Detection error Code: " << retValue << std::endl;
             DNHPXUninitFaceAlignment(align_handle);
+#ifndef NO_EXCEPTIONS  
             throw retValue;
+#endif
         }
             
         
@@ -117,8 +124,10 @@ int main(int argc, char** argv)
         DNHPXFaceRect face_box;
         retValue = DNHPXMaxFaceDetect(hDetect, oriImgData.data, oriImgData.cols, 
             oriImgData.rows, face_box);
+#ifndef NO_EXCEPTIONS  
         if (0 != retValue)
             throw retValue;
+#endif
 
         timeCount.Stop();
         std::cout << "Detection: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
@@ -183,6 +192,7 @@ int main(int argc, char** argv)
         
         DNHPXUninitFaceAlignment(align_handle);
         DNHPXUninitFaceDetect(hDetect);
+#ifndef NO_EXCEPTIONS  
     }
     catch (const std::bad_alloc &)
 	{
@@ -196,6 +206,7 @@ int main(int argc, char** argv)
 	{
 		retValue = -3;
 	}
+#endif
     
 	return retValue;
 }
