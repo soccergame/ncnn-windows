@@ -92,10 +92,10 @@ int main(int argc, char** argv)
     try
     {
         // Initialize        
-        retValue = SetFaceGenderLibPath(pModulePath);
+        retValue = DNHPXSetFaceGenderLibPath(pModulePath);
         
         DNHPXFaceAttHandle hFace;
-        retValue |= InitOLDFaceGender(0, 0, &hFace, 4);
+        retValue |= DNHPXInitFaceGender(0, &hFace, 4);
         //retValue |= InitDeepFeat("NNModel.dat", gpuId, &hAge);
         if (0 != retValue) {
             std::cout << "Error Code: " << retValue << std::endl;
@@ -107,7 +107,7 @@ int main(int argc, char** argv)
         retValue |= DNHPXInitFaceDetect(&hDetect);
         if (DNHPX_OK != retValue) {
             std::cout << "Detection error Code: " << retValue << std::endl;
-            UninitFaceGender(hFace);
+            DNHPXUninitFaceGender(hFace);
 #ifndef NO_EXCEPTIONS  
             throw retValue;
 #endif
@@ -129,8 +129,8 @@ int main(int argc, char** argv)
         timeCount.Stop();
         std::cout << "Detection: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
         
-        cv::Mat cvt_image;
-        cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2RGB);
+        /*cv::Mat cvt_image;
+        cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2RGB);*/
 
         int age = 0;
         float gender_score = 0.0f;
@@ -138,16 +138,15 @@ int main(int argc, char** argv)
         float glass_score = 0.0f;
         float happy_score = 0.0f;
         int emotion = 0;
-        for (int test_idx = 0; test_idx < 1; ++test_idx) {
-            timeCount.Start();
-            retValue = GetFaceGenderScore(hFace, face_box.key_points,
-                oriImgData.data, oriImgData.cols, oriImgData.rows,
-                oriImgData.channels(), gender_score, age, beauty_score,
-                glass_score, emotion, happy_score);
-            timeCount.Stop();
-            std::cout << "[" << test_idx << "]Gender: " 
-                << 1000 * timeCount.GetTime() << "ms" << std::endl;
-        }
+        //for (int test_idx = 0; test_idx < 1; ++test_idx) {
+        timeCount.Start();
+        retValue = DNHPXGetFaceGenderScore(hFace, face_box.key_points,
+            oriImgData.data, oriImgData.cols, oriImgData.rows,
+            oriImgData.channels(), gender_score, age, beauty_score,
+            glass_score, emotion, happy_score);
+        timeCount.Stop();
+        std::cout << "Attribute: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
+        //}
 
         // 计算性别
         if (gender_score > 0.5f)
@@ -195,8 +194,9 @@ int main(int argc, char** argv)
         {
             cv::Mat oriImgData = cv::imread(imgList[l], CV_LOAD_IMAGE_COLOR);
             // Face detection
-            SN::DetectedFaceBox face_box;
-            retValue = FaceDetect_maxDetect(hDetect, oriImgData, face_box);
+            DNHPXFaceRect face_box;
+            retValue = DNHPXMaxFaceDetect(hDetect, oriImgData.data, oriImgData.cols,
+                oriImgData.rows, face_box);
             if (0 != retValue)
                 throw retValue;
             /*retValue = save_max_rect_face(imgList[l], fd_mtcnn, face_box);
@@ -219,14 +219,20 @@ int main(int argc, char** argv)
             retValue = GetFaceBeautyScore(hFace, feaPoints,
                 cvt_image.data, oriImgData.cols, oriImgData.rows,
                 oriImgData.channels(), gender_score, age);*/
-            cv::Mat cvt_image;
-            cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2RGB);
             int age = 0;
             float gender_score = 0.0f;
             float beauty_score = 0.0f;
-            retValue = GetFaceGenderScore(hFace, face_box.keypoints,
-                cvt_image.data, oriImgData.cols, oriImgData.rows,
-                oriImgData.channels(), gender_score, age, beauty_score);
+            float glass_score = 0.0f;
+            float happy_score = 0.0f;
+            int emotion = 0;
+            //for (int test_idx = 0; test_idx < 1; ++test_idx) {
+            timeCount.Start();
+            retValue = DNHPXGetFaceGenderScore(hFace, face_box.key_points,
+                oriImgData.data, oriImgData.cols, oriImgData.rows,
+                oriImgData.channels(), gender_score, age, beauty_score,
+                glass_score, emotion, happy_score);
+            timeCount.Stop();
+            std::cout << "Attribute: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
 
             std::cout << imgList[l] << std::endl;
             // 计算性别
@@ -244,10 +250,30 @@ int main(int argc, char** argv)
                 std::cout << "Age: " << age << std::endl;
 
             std::cout << "Beauty: " << beauty_score << std::endl;
+
+            if (glass_score > 0.5f)
+                std::cout << "No glasses" << std::endl;
+            else
+                std::cout << "Wear glasses" << std::endl;
+
+            if (0 == emotion)
+                std::cout << "angery" << std::endl;
+            else if (1 == emotion)
+                std::cout << "disgusted" << std::endl;
+            else if (2 == emotion)
+                std::cout << "fearful" << std::endl;
+            else if (3 == emotion)
+                std::cout << "happy, score: " << happy_score << std::endl;
+            else if (4 == emotion)
+                std::cout << "neutral" << std::endl;
+            else if (5 == emotion)
+                std::cout << "sad" << std::endl;
+            else if (6 == emotion)
+                std::cout << "surprise" << std::endl;
         }
 #endif
         
-        UninitFaceGender(hFace);
+        DNHPXUninitFaceGender(hFace);
         DNHPXUninitFaceDetect(hDetect);
     }
     catch (const std::bad_alloc &)
