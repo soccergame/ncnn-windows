@@ -27,10 +27,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\examples\face_gender\face_gender.h" />
+    <ClInclude Include="..\..\examples\face_gender\dnhpx_face_gender.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\examples\face_gender\face_gender.cpp" />
+    <ClCompile Include="..\..\examples\face_gender\dnhpx_face_gender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\examples\face_gender\face_gender.def" />

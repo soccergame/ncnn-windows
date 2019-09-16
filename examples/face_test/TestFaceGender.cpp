@@ -1,8 +1,8 @@
-#include "face_gender.h"
-#include "FaceDetectEngine.hpp"
-#include "autoarray.h"
+#include "dnhpx_face_gender.h"
+#include "dnhpx_face_detection.h"
+#include "dnhpx_auto_array.h"
 #ifdef _WIN32
-#include "TimeCount.h"
+#include "dnhpx_time_count.h"
 #endif
 #include <fstream>
 #include <iostream>
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
     float maxR = 0;
     int label = 0;
 #ifdef _WIN32
-    CTimeCount timeCount;
+    dnhpx::CTimeCount timeCount;
 #endif
     
     try
@@ -94,7 +94,7 @@ int main(int argc, char** argv)
         // Initialize        
         retValue = SetFaceGenderLibPath(pModulePath);
         
-        GenderHandle hFace;
+        DNHPXFaceAttHandle hFace;
         retValue |= InitOLDFaceGender(0, 0, &hFace, 4);
         //retValue |= InitDeepFeat("NNModel.dat", gpuId, &hAge);
         if (0 != retValue) {
@@ -102,13 +102,15 @@ int main(int argc, char** argv)
             throw retValue;
         }
 
-        retValue = FaceDetect_setLibPath(pModulePath);
-        SN::FDHANDLE hDetect;
-        retValue |= FaceDetect_init(&hDetect);
-        if (0 != retValue) {
-            std::cout << "Error Code: " << retValue << std::endl;
+        retValue = DNHPXSetFaceDetectLibPath(pModulePath);
+        DNHPXFaceDetHandle hDetect;
+        retValue |= DNHPXInitFaceDetect(&hDetect);
+        if (DNHPX_OK != retValue) {
+            std::cout << "Detection error Code: " << retValue << std::endl;
             UninitFaceGender(hFace);
+#ifndef NO_EXCEPTIONS  
             throw retValue;
+#endif
         }
             
         
@@ -118,8 +120,9 @@ int main(int argc, char** argv)
         cv::Mat oriImgData = cv::imread(strImgName, cv::IMREAD_COLOR);
         // Face detection
         timeCount.Start();
-        SN::DetectedFaceBox face_box;
-        retValue = FaceDetect_maxDetect(hDetect, oriImgData, face_box);
+        DNHPXFaceRect face_box;
+        retValue = DNHPXMaxFaceDetect(hDetect, oriImgData.data, oriImgData.cols, 
+            oriImgData.rows, face_box);
         if (0 != retValue)
             throw retValue;
 
@@ -137,8 +140,8 @@ int main(int argc, char** argv)
         int emotion = 0;
         for (int test_idx = 0; test_idx < 1; ++test_idx) {
             timeCount.Start();
-            retValue = GetFaceGenderScore(hFace, face_box.keypoints,
-                cvt_image.data, oriImgData.cols, oriImgData.rows,
+            retValue = GetFaceGenderScore(hFace, face_box.key_points,
+                oriImgData.data, oriImgData.cols, oriImgData.rows,
                 oriImgData.channels(), gender_score, age, beauty_score,
                 glass_score, emotion, happy_score);
             timeCount.Stop();
@@ -163,9 +166,9 @@ int main(int argc, char** argv)
         std::cout << "Beauty: " << beauty_score << std::endl;
 
         if (glass_score > 0.5f)
-            std::cout << "Wear glasses" << std::endl;
-        else
             std::cout << "No glasses" << std::endl;
+        else
+            std::cout << "Wear glasses" << std::endl;
 
         if (0 == emotion)
             std::cout << "angery" << std::endl;
@@ -245,7 +248,7 @@ int main(int argc, char** argv)
 #endif
         
         UninitFaceGender(hFace);
-        FaceDetect_release(hDetect);
+        DNHPXUninitFaceDetect(hDetect);
     }
     catch (const std::bad_alloc &)
 	{

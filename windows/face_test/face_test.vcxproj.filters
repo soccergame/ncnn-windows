@@ -13,7 +13,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\examples\face_test\TestFaceAlignment.cpp">
+    <ClCompile Include="..\..\examples\face_test\TestFaceGender.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

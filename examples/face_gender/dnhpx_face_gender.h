@@ -16,20 +16,20 @@ extern "C"
 	 *		\param[in] szLibPath library path name
 	 *	\return int error code defined in THIDErrorDef.h
 	 */
-	int __stdcall SetFaceGenderLibPath(const char *szLibPath);
+	int __stdcall DNHPXSetFaceGenderLibPath(const char *szLibPath);
 
 	/**
 	 *	\brief initialize deep face feature extraction sdk	 
 	 *	\return int error code defined in THIDErrorDef.h	 
 	 */
-    int __stdcall InitFaceGender(const char* szResName,
+    int __stdcall DNHPXInitFaceGender(const char* szResName,
         DNHPXFaceAttHandle* pHandle, int num_threads = 1, bool light_mode = true);
 
     /**
     *	\brief initialize deep face feature extraction sdk
     *	\return int error code defined in THIDErrorDef.h
     */
-    int __stdcall InitOLDFaceGender(const char* szParamName,
+    int __stdcall DNHPXInitOLDFaceGender(const char* szParamName,
         const char *szBinName, DNHPXFaceAttHandle* pHandle,
         int num_threads = 1, bool light_mode = true);
 	
@@ -38,7 +38,7 @@ extern "C"
 	 *	\brief free deep face feature extraction sdk
 	 *	\return int error code defined in THIDErrorDef.h
 	 */
-	int __stdcall UninitFaceGender(DNHPXFaceAttHandle handle);
+	int __stdcall DNHPXUninitFaceGender(DNHPXFaceAttHandle handle);
 
 	/**
 	 *	\brief get deep face feature size in bytes
@@ -57,8 +57,8 @@ extern "C"
     *         pFeatures 返回的颜值分数
     *         fea_dim 返回的pFeatures的长度
     */
-    int __stdcall GetFaceGenderScore(DNHPXFaceAttHandle handle,
-        const float *feaPoints, const unsigned char *image_data,int width, 
+    int __stdcall DNHPXGetFaceGenderScore(DNHPXFaceAttHandle handle,
+        const DNHPXPointF *feaPoints, const unsigned char *image_data,int width, 
         int height, int channel, float &gender_score, int &age, float &beauty_score,
         float &glass_score, int &emotion, float &happy_score);
 #ifdef __cplusplus

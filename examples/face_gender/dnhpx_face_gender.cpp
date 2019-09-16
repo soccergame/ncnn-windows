@@ -13,7 +13,7 @@
 
 #define GLOG_NO_ABBREVIATED_SEVERITIES
 
-#include "face_gender.h"
+#include "dnhpx_face_gender.h"
 #include "dnhpx_face_normalization.h"
 #include "dnhpx_auto_array.h"
 #include "dnhpx_error_code.h"
@@ -23,9 +23,9 @@
 #define _MAX_PATH 260
 #endif
 
-#define FACE_GENDER_MODEL_NAME "libsnfa.so"
-#define FACE_GENDER_PARAM_NAME "libsnfa.param"
-#define FACE_GENDER_BIN_NAME "libsnfa.bin"
+#define FACE_GENDER_MODEL_NAME "librls.so"
+#define FACE_GENDER_PARAM_NAME "librls.param"
+#define FACE_GENDER_BIN_NAME "librls.bin"
 
 namespace
 {
@@ -41,8 +41,8 @@ namespace
     volatile int g_FaceGenderInitCount = 0;
 }
 
-int __stdcall GetFaceGenderScore(DNHPXFaceAttHandle handle,
-    const float *feaPoints, const unsigned char *image_data, int width,
+int __stdcall DNHPXGetFaceGenderScore(DNHPXFaceAttHandle handle,
+    const DNHPXPointF*feaPoints, const unsigned char *image_data, int width,
     int height, int channel, float &gender_score, int &age, float &beauty_score,
     float &glass_score, int &emotion, float &happy_score)
 {
@@ -63,11 +63,17 @@ int __stdcall GetFaceGenderScore(DNHPXFaceAttHandle handle,
         if (ncnn_face_img.empty())
             return DNHPX_MEMORY_ALLOC_ERROR;
 
+        dnhpx::AutoArray<float> feature_points_5(10);
+        for (int i = 0; i < 5; ++i) {
+            feature_points_5[2 * i] = feaPoints[i].x;
+            feature_points_5[2 * i + 1] = feaPoints[i].y;
+        }
+
         //count = clock();
         int size = width * height;
         if (channel == 3) {
             affineNorm.NormImageRaw2Planar(image_data, width, height,
-                channel, feaPoints, 5, (float *)ncnn_face_img);
+                channel, feature_points_5, 5, (float *)ncnn_face_img);
 
             ncnn_face_img.substract_mean_normalize(mean_vals, norm_vals);
         }
@@ -77,7 +83,7 @@ int __stdcall GetFaceGenderScore(DNHPXFaceAttHandle handle,
             float* ptr2 = ncnn_face_img.channel(2);
             affineNorm.NormImage(
                 image_data, //pImage.begin() + j * testImg.rows * testImg.cols,
-                width, height, feaPoints, 5,
+                width, height, feature_points_5, 5,
                 ptr0);
             memcpy(ptr1, ptr0, sizeof(float) * 12288);
             memcpy(ptr2, ptr0, sizeof(float) * 12288);
@@ -109,33 +115,33 @@ int __stdcall GetFaceGenderScore(DNHPXFaceAttHandle handle,
         }*/
 
         gender_score = out[0];
-        glass_score = out[3];
-        happy_score = out[7];
+        glass_score = out[2];
+        
         float emotion_vec[7];
         float max_score = -10000.0f;
         float min_score = 10000.0f;
         for (int c = 0; c < 7; ++c) {
-            emotion_vec[c] = out[c + 4];
-            if (max_score < out[c + 4]) {
-                max_score = out[c + 4];
+            emotion_vec[c] = out[c + 5];
+            if (max_score < out[c + 5]) {
+                max_score = out[c + 5];
                 emotion = c;
             }  
-            if (min_score > out[c + 4]) {
-                min_score = out[c + 4];
+            if (min_score > out[c + 5]) {
+                min_score = out[c + 5];
             }
         }
-        happy_score = (happy_score - min_score) / (max_score - min_score);
+        //happy_score = (happy_score - min_score) / (max_score - min_score);
         age = 0;
-        int iter = (out.total() - 12) / 2;
+        int iter = (out.total() - 14) / 2;
         for (int c = 0; c < iter; ++c)
         {
-            if (out[2 * c + 11] < out[2 * c + 12])
+            if (out[2 * c + 12] < out[2 * c + 13])
                 age++;
         }
         age = age + 16;
 
-        beauty_score = out[out.total() - 1];
-
+        beauty_score = out[out.total() - 2];
+        happy_score = out[out.total() - 1];
         //count = clock() - count;
         //std::cout << "result: " << count << std::endl;
     }
@@ -156,7 +162,7 @@ int __stdcall GetFaceGenderScore(DNHPXFaceAttHandle handle,
 }
 
 
-int __stdcall SetFaceGenderLibPath(const char *szLibPath)
+int __stdcall DNHPXSetFaceGenderLibPath(const char *szLibPath)
 {
 	if (szLibPath == NULL)
 		return -1;
@@ -182,7 +188,7 @@ int __stdcall SetFaceGenderLibPath(const char *szLibPath)
 	return 0;
 }
 
-int __stdcall InitFaceGender(const char *szNetName,
+int __stdcall DNHPXInitFaceGender(const char *szNetName,
     DNHPXFaceAttHandle* pHandle, int num_threads, bool light_mode)
 {
 	if (pHandle == NULL)
@@ -252,7 +258,7 @@ int __stdcall InitFaceGender(const char *szNetName,
 	return retValue;
 }
 
-int __stdcall InitOLDFaceGender(const char *szParamName,
+int __stdcall DNHPXInitOLDFaceGender(const char *szParamName,
     const char* szBinName, DNHPXFaceAttHandle* pHandle,
     int num_threads, bool light_mode)
 {
@@ -330,7 +336,7 @@ int __stdcall InitOLDFaceGender(const char *szParamName,
     return retValue;
 }
 
-int __stdcall UninitFaceGender(DNHPXFaceAttHandle handle)
+int __stdcall DNHPXUninitFaceGender(DNHPXFaceAttHandle handle)
 {
     if (g_bFaceGenderInited) {
         --g_FaceGenderInitCount;

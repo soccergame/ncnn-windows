@@ -1,7 +1,7 @@
 LIBRARY	"face_genderD"
 EXPORTS
-	SetFaceGenderLibPath	@1
-	InitFaceGender			@2
-	InitOLDFaceGender		@3
-	UninitFaceGender		@4
-	GetFaceGenderScore		@5
+	DNHPXSetFaceGenderLibPath	@1
+	DNHPXInitFaceGender			@2
+	DNHPXInitOLDFaceGender		@3
+	DNHPXUninitFaceGender		@4
+	DNHPXGetFaceGenderScore		@5
