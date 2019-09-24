@@ -37,31 +37,31 @@ mtcnn::CFaceDetection::CFaceDetection() {
     al_domain.clear();
 }
 
-mtcnn::CFaceDetection::CFaceDetection(const string &model_path) {
-
-    std::vector<std::string> param_files = {
-        model_path + "/det1.param",
-        model_path + "/det2.param",
-        model_path + "/det3.param"
-    };
-
-    std::vector<std::string> bin_files = {
-        model_path + "/det1.bin",
-        model_path + "/det2.bin",
-        model_path + "/det3.bin"
-    };
-
-    Pnet = new ncnn::Net();
-    Rnet = new ncnn::Net();
-    Onet = new ncnn::Net();
-
-    Pnet->load_param(param_files[0].data());
-    Pnet->load_model(bin_files[0].data());
-    Rnet->load_param(param_files[1].data());
-    Rnet->load_model(bin_files[1].data());
-    Onet->load_param(param_files[2].data());
-    Onet->load_model(bin_files[2].data());
-}
+//mtcnn::CFaceDetection::CFaceDetection(const string &model_path) {
+//
+//    std::vector<std::string> param_files = {
+//        model_path + "/det1.param",
+//        model_path + "/det2.param",
+//        model_path + "/det3.param"
+//    };
+//
+//    std::vector<std::string> bin_files = {
+//        model_path + "/det1.bin",
+//        model_path + "/det2.bin",
+//        model_path + "/det3.bin"
+//    };
+//
+//    Pnet = new ncnn::Net();
+//    Rnet = new ncnn::Net();
+//    Onet = new ncnn::Net();
+//
+//    Pnet->load_param(param_files[0].data());
+//    Pnet->load_model(bin_files[0].data());
+//    Rnet->load_param(param_files[1].data());
+//    Rnet->load_model(bin_files[1].data());
+//    Onet->load_param(param_files[2].data());
+//    Onet->load_model(bin_files[2].data());
+//}
 
 //mtcnn::CFaceDetection::CFaceDetection(const std::vector<std::string> param_files, const std::vector<std::string> bin_files) {
 //    Pnet->load_param(param_files[0].data());

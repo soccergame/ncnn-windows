@@ -33,7 +33,7 @@ namespace mtcnn {
 
     public:
         CFaceDetection();
-        CFaceDetection(const string& model_path);
+        //CFaceDetection(const string& model_path);
         //CFaceDetection(const std::vector<std::string> param_files, const std::vector<std::string> bin_files);
         ~CFaceDetection();
 
