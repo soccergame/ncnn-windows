@@ -1,9 +1,7 @@
 #include "dnhpx_face_gender.h"
 #include "dnhpx_face_detection.h"
 #include "dnhpx_auto_array.h"
-#ifdef _WIN32
 #include "dnhpx_time_count.h"
-#endif
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -85,9 +83,7 @@ int main(int argc, char** argv)
     int retValue = 0;
     float maxR = 0;
     int label = 0;
-#ifdef _WIN32
     dnhpx::CTimeCount timeCount;
-#endif
     
     try
     {
@@ -116,7 +112,7 @@ int main(int argc, char** argv)
         
         // Read Image
         //cv::Mat garyImgData = cv::imread(strImgName, CV_LOAD_IMAGE_GRAYSCALE);
-#ifdef _WIN32
+//#ifdef _WIN32
         cv::Mat oriImgData = cv::imread(strImgName, cv::IMREAD_COLOR);
         // Face detection
         timeCount.Start();
@@ -183,95 +179,95 @@ int main(int argc, char** argv)
             std::cout << "sad" << std::endl;
         else if (6 == emotion)
             std::cout << "surprise" << std::endl;
-#else
-        char path_list[512] = { 0 };
-        strcpy(path_list, strImgName.c_str());
-
-        vector<string> imgList;
-        readFileList(path_list, imgList);
-
-        for (int l = 0; l < imgList.size(); l++)
-        {
-            cv::Mat oriImgData = cv::imread(imgList[l], CV_LOAD_IMAGE_COLOR);
-            // Face detection
-            DNHPXFaceRect face_box;
-            retValue = DNHPXMaxFaceDetect(hDetect, oriImgData.data, oriImgData.cols,
-                oriImgData.rows, face_box);
-            if (0 != retValue)
-                throw retValue;
-            /*retValue = save_max_rect_face(imgList[l], fd_mtcnn, face_box);
-            if (0 != retValue)
-                continue;*/
-
-            /*float feaPoints[10];
-            for (int j = 0; j < 5; ++j) {
-                feaPoints[2 * j] = face_box.ppoint[j];
-                feaPoints[2 * j + 1] = face_box.ppoint[j + 5];
-            }
-
-            cv::Mat oriImgData = cv::imread(imgList[l], CV_LOAD_IMAGE_COLOR);
-
-            cv::Mat cvt_image;
-            cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2RGB);
-
-            int age = 0;
-            float gender_score = 0.0f;
-            retValue = GetFaceBeautyScore(hFace, feaPoints,
-                cvt_image.data, oriImgData.cols, oriImgData.rows,
-                oriImgData.channels(), gender_score, age);*/
-            int age = 0;
-            float gender_score = 0.0f;
-            float beauty_score = 0.0f;
-            float glass_score = 0.0f;
-            float happy_score = 0.0f;
-            int emotion = 0;
-            //for (int test_idx = 0; test_idx < 1; ++test_idx) {
-            timeCount.Start();
-            retValue = DNHPXGetFaceGenderScore(hFace, face_box.key_points,
-                oriImgData.data, oriImgData.cols, oriImgData.rows,
-                oriImgData.channels(), gender_score, age, beauty_score,
-                glass_score, emotion, happy_score);
-            timeCount.Stop();
-            std::cout << "Attribute: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
-
-            std::cout << imgList[l] << std::endl;
-            // 计算性别
-            if (gender_score > 0.5f)
-                std::cout << "Gender: female" << std::endl;
-            else
-                std::cout << "Gender: male" << std::endl;
-
-            // 计算年龄
-            if (age <= 16)
-                std::cout << "child" << std::endl;
-            else if (age >= 62)
-                std::cout << "old" << std::endl;
-            else
-                std::cout << "Age: " << age << std::endl;
-
-            std::cout << "Beauty: " << beauty_score << std::endl;
-
-            if (glass_score > 0.5f)
-                std::cout << "No glasses" << std::endl;
-            else
-                std::cout << "Wear glasses" << std::endl;
-
-            if (0 == emotion)
-                std::cout << "angery" << std::endl;
-            else if (1 == emotion)
-                std::cout << "disgusted" << std::endl;
-            else if (2 == emotion)
-                std::cout << "fearful" << std::endl;
-            else if (3 == emotion)
-                std::cout << "happy, score: " << happy_score << std::endl;
-            else if (4 == emotion)
-                std::cout << "neutral" << std::endl;
-            else if (5 == emotion)
-                std::cout << "sad" << std::endl;
-            else if (6 == emotion)
-                std::cout << "surprise" << std::endl;
-        }
-#endif
+//#else
+//        char path_list[512] = { 0 };
+//        strcpy(path_list, strImgName.c_str());
+//
+//        vector<string> imgList;
+//        readFileList(path_list, imgList);
+//
+//        for (int l = 0; l < imgList.size(); l++)
+//        {
+//            cv::Mat oriImgData = cv::imread(imgList[l], CV_LOAD_IMAGE_COLOR);
+//            // Face detection
+//            DNHPXFaceRect face_box;
+//            retValue = DNHPXMaxFaceDetect(hDetect, oriImgData.data, oriImgData.cols,
+//                oriImgData.rows, face_box);
+//            if (0 != retValue)
+//                throw retValue;
+//            /*retValue = save_max_rect_face(imgList[l], fd_mtcnn, face_box);
+//            if (0 != retValue)
+//                continue;*/
+//
+//            /*float feaPoints[10];
+//            for (int j = 0; j < 5; ++j) {
+//                feaPoints[2 * j] = face_box.ppoint[j];
+//                feaPoints[2 * j + 1] = face_box.ppoint[j + 5];
+//            }
+//
+//            cv::Mat oriImgData = cv::imread(imgList[l], CV_LOAD_IMAGE_COLOR);
+//
+//            cv::Mat cvt_image;
+//            cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2RGB);
+//
+//            int age = 0;
+//            float gender_score = 0.0f;
+//            retValue = GetFaceBeautyScore(hFace, feaPoints,
+//                cvt_image.data, oriImgData.cols, oriImgData.rows,
+//                oriImgData.channels(), gender_score, age);*/
+//            int age = 0;
+//            float gender_score = 0.0f;
+//            float beauty_score = 0.0f;
+//            float glass_score = 0.0f;
+//            float happy_score = 0.0f;
+//            int emotion = 0;
+//            //for (int test_idx = 0; test_idx < 1; ++test_idx) {
+//            timeCount.Start();
+//            retValue = DNHPXGetFaceGenderScore(hFace, face_box.key_points,
+//                oriImgData.data, oriImgData.cols, oriImgData.rows,
+//                oriImgData.channels(), gender_score, age, beauty_score,
+//                glass_score, emotion, happy_score);
+//            timeCount.Stop();
+//            std::cout << "Attribute: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
+//
+//            std::cout << imgList[l] << std::endl;
+//            // 计算性别
+//            if (gender_score > 0.5f)
+//                std::cout << "Gender: female" << std::endl;
+//            else
+//                std::cout << "Gender: male" << std::endl;
+//
+//            // 计算年龄
+//            if (age <= 16)
+//                std::cout << "child" << std::endl;
+//            else if (age >= 62)
+//                std::cout << "old" << std::endl;
+//            else
+//                std::cout << "Age: " << age << std::endl;
+//
+//            std::cout << "Beauty: " << beauty_score << std::endl;
+//
+//            if (glass_score > 0.5f)
+//                std::cout << "No glasses" << std::endl;
+//            else
+//                std::cout << "Wear glasses" << std::endl;
+//
+//            if (0 == emotion)
+//                std::cout << "angery" << std::endl;
+//            else if (1 == emotion)
+//                std::cout << "disgusted" << std::endl;
+//            else if (2 == emotion)
+//                std::cout << "fearful" << std::endl;
+//            else if (3 == emotion)
+//                std::cout << "happy, score: " << happy_score << std::endl;
+//            else if (4 == emotion)
+//                std::cout << "neutral" << std::endl;
+//            else if (5 == emotion)
+//                std::cout << "sad" << std::endl;
+//            else if (6 == emotion)
+//                std::cout << "surprise" << std::endl;
+//        }
+//#endif
         
         DNHPXUninitFaceGender(hFace);
         DNHPXUninitFaceDetect(hDetect);
