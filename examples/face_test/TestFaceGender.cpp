@@ -133,6 +133,9 @@ int main(int argc, char** argv)
         float beauty_score = 0.0f;
         float glass_score = 0.0f;
         float happy_score = 0.0f;
+        float pitch = 0.0f;
+        float yaw = 0.0f;
+        float roll = 0.0f;
         int emotion = 0;
         //for (int test_idx = 0; test_idx < 1; ++test_idx) {
         timeCount.Start();
@@ -144,13 +147,13 @@ int main(int argc, char** argv)
         std::cout << "Attribute: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
         //}
 
-        // 计算性别
+        // ???????
         if (gender_score > 0.5f)
             std::cout << "Gender: female" << std::endl;
         else
             std::cout << "Gender: male" << std::endl;
 
-        // 计算年龄
+        // ????????
         if (age <= 16)
             std::cout << "child" << std::endl;
         else if (age >= 62)
@@ -231,13 +234,13 @@ int main(int argc, char** argv)
 //            std::cout << "Attribute: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
 //
 //            std::cout << imgList[l] << std::endl;
-//            // 计算性别
+//            // ???????
 //            if (gender_score > 0.5f)
 //                std::cout << "Gender: female" << std::endl;
 //            else
 //                std::cout << "Gender: male" << std::endl;
 //
-//            // 计算年龄
+//            // ????????
 //            if (age <= 16)
 //                std::cout << "child" << std::endl;
 //            else if (age >= 62)

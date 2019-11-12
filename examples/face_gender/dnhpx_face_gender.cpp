@@ -342,7 +342,7 @@ int __stdcall DNHPXUninitFaceGender(DNHPXFaceAttHandle handle)
         --g_FaceGenderInitCount;
         if (g_FaceGenderInitCount == 0) {
 
-            // ³õÊ¼»¯±äÁ¿ÐÞ¸Ä
+            // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½
             g_bFaceGenderInited = false;
 
             dnhpx::CAlgorithmDomain* pCaffeNet = reinterpret_cast<dnhpx::CAlgorithmDomain *>(handle);
