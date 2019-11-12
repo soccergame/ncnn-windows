@@ -13,8 +13,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\face_gender\face_gender.def" />
-    <None Include="..\..\examples\face_gender\face_genderD.def" />
+    <None Include="..\..\examples\face_pose\face_pose.def" />
+    <None Include="..\..\examples\face_pose\face_poseD.def" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\examples\face_pose\dnhpx_face_pose.h">

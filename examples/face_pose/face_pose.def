@@ -1,0 +1,7 @@
+LIBRARY	"face_pose"
+EXPORTS
+	DNHPXSetFacePoseLibPath	    @1
+	DNHPXInitFacePose			@2
+	DNHPXInitOLDFacePose		@3
+	DNHPXUninitFacePose		    @4
+	DNHPXGetFacePose		    @5

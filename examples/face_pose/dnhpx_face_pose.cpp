@@ -1,3 +1,9 @@
+/*
+# 作者：杨睿昕、何智翔
+# 描述：建立网络一些自定层
+# 创建日期：20191112
+*/
+
 #include <cstring>
 #include <map>
 #include <string>
@@ -270,9 +276,8 @@ int __stdcall DNHPXGetFacePose(DNHPXFacePosHandle handle,
 
         ex.input("data", ncnn_face_img);
         ncnn::Mat out;
-        ex.extract("output", out);
-
-        ex.extract("hybridsequential0_multitask0_dense0_fwd", out); // final output layer
+        // 最终的输出层
+        ex.extract("hybridsequential0_multitask0_dense0_fwd", out); 
 
     // post processing	
         std::vector<double> predPitch, predRoll, predYaw;
@@ -288,9 +293,9 @@ int __stdcall DNHPXGetFacePose(DNHPXFacePosHandle handle,
         }
 
         // pitch times -1 to keep consistence with other api
-        pitch = postProcessing(predPitch) * (-1.0);
-        roll = postProcessing(predRoll);
-        yaw = postProcessing(predYaw);
+        pitch = float(-1.0 * postProcessing(predPitch));
+        roll = float(postProcessing(predRoll));
+        yaw = float(postProcessing(predYaw));
     }
     catch (const std::bad_alloc&)
     {
