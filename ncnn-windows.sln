@@ -42,6 +42,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "face_recognition", "windows
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "face_alignment", "windows\face_alignment\face_alignment.vcxproj", "{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "face_pose", "windows\face_pose\face_pose.vcxproj", "{70599C42-3BB1-4B7D-AB59-24E244C697D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -160,6 +162,18 @@ Global
 		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.StaticRelease|x64.Build.0 = StaticRelease|x64
 		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.StaticRelease|x86.ActiveCfg = StaticRelease|Win32
 		{EE68BDEB-EAD0-4AE3-8EE5-6FD657D858BC}.StaticRelease|x86.Build.0 = StaticRelease|Win32
+		{70599C42-3BB1-4B7D-AB59-24E244C697D7}.Debug|x64.ActiveCfg = Debug|x64
+		{70599C42-3BB1-4B7D-AB59-24E244C697D7}.Debug|x64.Build.0 = Debug|x64
+		{70599C42-3BB1-4B7D-AB59-24E244C697D7}.Debug|x86.ActiveCfg = Debug|Win32
+		{70599C42-3BB1-4B7D-AB59-24E244C697D7}.Debug|x86.Build.0 = Debug|Win32
+		{70599C42-3BB1-4B7D-AB59-24E244C697D7}.Release|x64.ActiveCfg = Release|x64
+		{70599C42-3BB1-4B7D-AB59-24E244C697D7}.Release|x64.Build.0 = Release|x64
+		{70599C42-3BB1-4B7D-AB59-24E244C697D7}.Release|x86.ActiveCfg = Release|Win32
+		{70599C42-3BB1-4B7D-AB59-24E244C697D7}.Release|x86.Build.0 = Release|Win32
+		{70599C42-3BB1-4B7D-AB59-24E244C697D7}.StaticRelease|x64.ActiveCfg = StaticRelease|x64
+		{70599C42-3BB1-4B7D-AB59-24E244C697D7}.StaticRelease|x64.Build.0 = StaticRelease|x64
+		{70599C42-3BB1-4B7D-AB59-24E244C697D7}.StaticRelease|x86.ActiveCfg = StaticRelease|Win32
+		{70599C42-3BB1-4B7D-AB59-24E244C697D7}.StaticRelease|x86.Build.0 = StaticRelease|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

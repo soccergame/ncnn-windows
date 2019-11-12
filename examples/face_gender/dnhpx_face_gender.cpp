@@ -262,6 +262,8 @@ int __stdcall DNHPXInitOLDFaceGender(const char *szParamName,
     const char* szBinName, DNHPXFaceAttHandle* pHandle,
     int num_threads, bool light_mode)
 {
+    printf("该函数即将停止使用，请使用函数：DNHPXInitFaceGender\n");
+
     if (pHandle == NULL)
         return -1;
 
@@ -342,7 +344,7 @@ int __stdcall DNHPXUninitFaceGender(DNHPXFaceAttHandle handle)
         --g_FaceGenderInitCount;
         if (g_FaceGenderInitCount == 0) {
 
-            // ��ʼ�������޸�
+            // 如果满足被释放的条件，则将初始化参数设置为false
             g_bFaceGenderInited = false;
 
             dnhpx::CAlgorithmDomain* pCaffeNet = reinterpret_cast<dnhpx::CAlgorithmDomain *>(handle);
