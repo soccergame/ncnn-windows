@@ -468,6 +468,7 @@ void mtcnn::CFaceDetection::detectMaxFace(ncnn::Mat& img_, std::vector<Bbox>& fi
     {
         //first stage
         PNet(scales_[i]);
+        PNet(scales_[i]);
         nms(firstBbox_, nms_threshold[0]);
         nmsTwoBoxs(firstBbox_, firstPreviousBbox_, nms_threshold[0]);
         if (firstBbox_.size() < 1) {

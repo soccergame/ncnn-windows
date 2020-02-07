@@ -2,6 +2,7 @@
 #include "dnhpx_face_detection.h"
 #include "dnhpx_auto_array.h"
 #include "dnhpx_time_count.h"
+#include "dnhpx_face_pose.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -108,6 +109,18 @@ int main(int argc, char** argv)
             throw retValue;
 #endif
         }
+
+        retValue = DNHPXSetFacePoseLibPath(pModulePath);
+        DNHPXFacePosHandle hPose;
+        retValue |= DNHPXInitFacePose(0, &hPose, 4);
+        if (DNHPX_OK != retValue) {
+            std::cout << "Pose error Code: " << retValue << std::endl;
+            DNHPXUninitFaceGender(hFace);
+            DNHPXUninitFaceDetect(hDetect);
+#ifndef NO_EXCEPTIONS  
+            throw retValue;
+#endif
+        }
             
         
         // Read Image
@@ -125,17 +138,26 @@ int main(int argc, char** argv)
         timeCount.Stop();
         std::cout << "Detection: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
         
-        /*cv::Mat cvt_image;
-        cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2RGB);*/
+        cv::Mat cvt_image;
+        cv::cvtColor(oriImgData, cvt_image, cv::COLOR_BGR2GRAY);
+        float pitch = 0.0f;
+        float yaw = 0.0f;
+        float roll = 0.0f;
+        timeCount.Start();
+        retValue = DNHPXGetFacePose(hPose, face_box,
+            cvt_image.data, cvt_image.cols, cvt_image.rows, 
+            pitch, yaw, roll);
+        timeCount.Stop();
+        std::cout << "Pitch: " << pitch << std::endl;
+        std::cout << "Yaw: " << yaw << std::endl;
+        std::cout << "Roll: " << roll << std::endl;
+        std::cout << "Pose detection: " << 1000 * timeCount.GetTime() << "ms" << std::endl;
 
         int age = 0;
         float gender_score = 0.0f;
         float beauty_score = 0.0f;
         float glass_score = 0.0f;
         float happy_score = 0.0f;
-        float pitch = 0.0f;
-        float yaw = 0.0f;
-        float roll = 0.0f;
         int emotion = 0;
         //for (int test_idx = 0; test_idx < 1; ++test_idx) {
         timeCount.Start();
@@ -274,6 +296,7 @@ int main(int argc, char** argv)
         
         DNHPXUninitFaceGender(hFace);
         DNHPXUninitFaceDetect(hDetect);
+        DNHPXUninitFacePose(hPose);
     }
     catch (const std::bad_alloc &)
 	{

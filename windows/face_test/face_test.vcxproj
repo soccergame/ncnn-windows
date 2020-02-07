@@ -147,14 +147,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;NOMINMAX;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)src\layer;D:\project\common\include\opencv411;D:\project\common\include\utils;$(SolutionDir)examples\face_detection;$(SolutionDir)examples\face_gender;$(SolutionDir)examples\face_recognition;$(SolutionDir)examples\face_alignment;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)src\layer;D:\project\common\include\opencv411;D:\project\common\include\utils;$(SolutionDir)examples\face_detection;$(SolutionDir)examples\face_gender;$(SolutionDir)examples\face_recognition;$(SolutionDir)examples\face_alignment;$(SolutionDir)examples\face_pose;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Build\$(Platform)\$(Configuration)\;D:\project\common\libs\opencv411\vc16\x64\staticlib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>face_detectionD.lib;face_recognitionD.lib;face_genderD.lib;face_alignmentD.lib;ade.lib;IlmImfd.lib;ippicvmt.lib;ippiwd.lib;ittnotifyd.lib;libjasperd.lib;libjpeg-turbod.lib;libpngd.lib;libprotobufd.lib;libtiffd.lib;libwebpd.lib;quircd.lib;zlibd.lib;opencv_world411d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>face_detectionD.lib;face_recognitionD.lib;face_genderD.lib;face_poseD.lib;face_alignmentD.lib;ade.lib;IlmImfd.lib;ippicvmt.lib;ippiwd.lib;ittnotifyd.lib;libjasperd.lib;libjpeg-turbod.lib;libpngd.lib;libprotobufd.lib;libtiffd.lib;libwebpd.lib;quircd.lib;zlibd.lib;opencv_world411d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <ForceFileOutput>MultiplyDefinedSymbolOnly</ForceFileOutput>
       <ModuleDefinitionFile>
