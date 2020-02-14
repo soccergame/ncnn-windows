@@ -4,15 +4,13 @@
 #define __stdcall
 #endif
 
+#include "dnhpx_structure.h"
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif	//	__cplusplus
 
-#ifndef _THIDFACEHANDLE
-#define _THIDFACEHANDLE
-	typedef void *RecognitionHandle;
-#endif	//	_THIDFACEHANDLE
 
 	/**
 	 *	\brief set feature extraction library path
@@ -26,14 +24,14 @@ extern "C"
 	 *	\return int error code defined in THIDErrorDef.h	 
 	 */
     int __stdcall InitFaceRecognition(const char *szResName,
-        RecognitionHandle *pHandle, int num_threads = 1, bool light_mode = true);
+        DNHPXFaceRecogHandle*pHandle, int num_threads = 1, bool light_mode = true);
 
     /**
     *	\brief initialize deep face feature extraction sdk
     *	\return int error code defined in THIDErrorDef.h
     */
     int __stdcall InitOLDFaceRecognition(const char *szParamName,
-        const char *szBinName, RecognitionHandle *pHandle,
+        const char *szBinName, DNHPXFaceRecogHandle*pHandle,
         int num_threads = 1, bool light_mode = true);
 	
 
@@ -41,7 +39,7 @@ extern "C"
 	 *	\brief free deep face feature extraction sdk
 	 *	\return int error code defined in THIDErrorDef.h
 	 */
-	int __stdcall UninitFaceRecognition(RecognitionHandle handle);
+	int __stdcall UninitFaceRecognition(DNHPXFaceRecogHandle handle);
 
 	/**
 	 *	\brief get deep face feature size in bytes
@@ -60,7 +58,7 @@ extern "C"
     *         pFeatures 返回的颜值分数
     *         fea_dim 返回的pFeatures的长度
     */
-    int __stdcall GetFaceRecognitionFeature(RecognitionHandle handle,
+    int __stdcall GetFaceRecognitionFeature(DNHPXFaceRecogHandle handle,
         const float *feaPoints, const unsigned char *image_data, int width, 
         int height, int channel, float **feature, int &fea_dim);
 
@@ -73,7 +71,7 @@ extern "C"
     *         pFeatures 返回的特征
     *         fea_dim 返回的pFeatures的长度
     */
-    int __stdcall GetFaceRecognitionFeatureRaw(RecognitionHandle handle,
+    int __stdcall GetFaceRecognitionFeatureRaw(DNHPXFaceRecogHandle handle,
         const unsigned char *norm_data, float **feature, int &fea_dim);
 #ifdef __cplusplus
 }

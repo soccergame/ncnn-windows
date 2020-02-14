@@ -13,17 +13,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\examples\face_beauty\face_beauty.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
+    <None Include="..\..\examples\face_beauty\face_beauty.def" />
+    <None Include="..\..\examples\face_beauty\face_beautyD.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\examples\face_beauty\face_beauty.h">
+    <ClInclude Include="..\..\examples\face_beauty\dnhpx_face_beauty.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\face_beauty\face_beauty.def" />
-    <None Include="..\..\examples\face_beauty\face_beautyD.def" />
+    <ClCompile Include="..\..\examples\face_beauty\dnhpx_face_beauty.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

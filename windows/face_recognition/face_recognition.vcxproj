@@ -27,10 +27,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\examples\face_recognition\face_recognition.h" />
+    <ClInclude Include="..\..\examples\face_recognition\dnhpx_face_recognition.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\examples\face_recognition\face_recognition.cpp" />
+    <ClCompile Include="..\..\examples\face_recognition\dnhpx_face_recognition.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\examples\face_recognition\face_recognition.def" />

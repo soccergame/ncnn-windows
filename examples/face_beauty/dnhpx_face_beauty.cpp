@@ -15,7 +15,7 @@
 
 #define GLOG_NO_ABBREVIATED_SEVERITIES
 
-#include "face_beauty.h"
+#include "dnhpx_face_beauty.h"
 
 #ifndef _WIN32
 #define _MAX_PATH 260
@@ -34,7 +34,7 @@ namespace
     dnhpx::AutoArray<unsigned char> pWeightBuf;
 }
 
-int __stdcall GetFaceBeautyScore(BeautyHandle handle, 
+int __stdcall GetFaceBeautyScore(DNHPXFaceAttHandle handle,
     const float *feaPoints, const unsigned char *image_data, int width,
     int height, int channel, float &beauty_score)
 {
@@ -127,7 +127,7 @@ int __stdcall SetFaceBeautyLibPath(const char *szLibPath)
 }
 
 int __stdcall InitFaceBeauty(const char *szNetName,
-    BeautyHandle *pHandle, int num_threads, bool light_mode)
+    DNHPXFaceAttHandle*pHandle, int num_threads, bool light_mode)
 {
 	if (pHandle == NULL)
 		return -1;
@@ -176,7 +176,7 @@ int __stdcall InitFaceBeauty(const char *szNetName,
 
         affineNorm.Initialize(256, 256, 1.0, 300, NormPoints);
 
-		*pHandle = reinterpret_cast<BeautyHandle>(pCaffeNet);
+		*pHandle = reinterpret_cast<DNHPXFaceAttHandle>(pCaffeNet);
 #endif
 	}
 	catch (const std::bad_alloc &)
@@ -196,7 +196,7 @@ int __stdcall InitFaceBeauty(const char *szNetName,
 }
 
 int __stdcall InitOLDFaceBeauty(const char *szParamName,
-    const char *szBinName, BeautyHandle *pHandle,
+    const char *szBinName, DNHPXFaceAttHandle*pHandle,
     int num_threads, bool light_mode)
 {
     if (pHandle == NULL)
@@ -252,7 +252,7 @@ int __stdcall InitOLDFaceBeauty(const char *szParamName,
 
         affineNorm.Initialize(256, 256, 1.0, 300, NormPoints);
 
-        *pHandle = reinterpret_cast<BeautyHandle>(pCaffeNet);
+        *pHandle = reinterpret_cast<DNHPXFaceAttHandle>(pCaffeNet);
     }
     catch (const std::bad_alloc &)
     {
@@ -270,7 +270,7 @@ int __stdcall InitOLDFaceBeauty(const char *szParamName,
     return retValue;
 }
 
-int __stdcall UninitFaceBeauty(BeautyHandle handle)
+int __stdcall UninitFaceBeauty(DNHPXFaceAttHandle handle)
 {
     dnhpx::CAlgorithmDomain* pCaffeNet = reinterpret_cast<dnhpx::CAlgorithmDomain*>(handle);
     pCaffeNet->clear();

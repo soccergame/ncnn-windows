@@ -15,7 +15,7 @@
 
 #define GLOG_NO_ABBREVIATED_SEVERITIES
 
-#include "face_recognition.h"
+#include "dnhpx_face_recognition.h"
 
 #ifndef _WIN32
 #define _MAX_PATH 260
@@ -39,7 +39,7 @@ namespace
     volatile int g_FaceRecognitionInitCount = 0;
 }
 
-int __stdcall GetFaceRecognitionFeature(RecognitionHandle handle,
+int __stdcall GetFaceRecognitionFeature(DNHPXFaceRecogHandle handle,
     const float *feaPoints, const unsigned char *image_data, int width,
     int height, int channel, float **feature, int &fea_dim)
 {
@@ -136,7 +136,7 @@ int __stdcall GetFaceRecognitionFeature(RecognitionHandle handle,
     return nRet;
 }
 
-int __stdcall GetFaceRecognitionFeatureRaw(RecognitionHandle handle,
+int __stdcall GetFaceRecognitionFeatureRaw(DNHPXFaceRecogHandle handle,
     const unsigned char *norm_data, float **feature, int &fea_dim)
 {
     if (norm_data == 0)
@@ -215,7 +215,7 @@ int __stdcall SetFaceRecognitionLibPath(const char *szLibPath)
 }
 
 int __stdcall InitFaceRecognition(const char *szNetName,
-    RecognitionHandle *pHandle, int num_threads, bool light_mode)
+    DNHPXFaceRecogHandle*pHandle, int num_threads, bool light_mode)
 {
 	if (pHandle == NULL)
 		return -1;
@@ -263,7 +263,7 @@ int __stdcall InitFaceRecognition(const char *szNetName,
         /*affineNorm.Initialize(96, 128, 0.78125, 128, NormPoints_128);*/
         affineNorm.Initialize(112, 112, 1.0, 112, NormPoints_128);
 
-		*pHandle = reinterpret_cast<RecognitionHandle>(pCaffeNet);
+		*pHandle = reinterpret_cast<DNHPXFaceRecogHandle>(pCaffeNet);
 
         g_bFaceRecognitionInited = true;
         ++g_FaceRecognitionInitCount;
@@ -286,7 +286,7 @@ int __stdcall InitFaceRecognition(const char *szNetName,
 }
 
 int __stdcall InitOLDFaceRecognition(const char *szParamName,
-    const char *szBinName, RecognitionHandle *pHandle,
+    const char *szBinName, DNHPXFaceRecogHandle*pHandle,
     int num_threads, bool light_mode)
 {
     if (pHandle == NULL)
@@ -340,7 +340,7 @@ int __stdcall InitOLDFaceRecognition(const char *szParamName,
         };
         affineNorm.Initialize(112, 112, 1.0, 112, NormPoints_128);
 
-        *pHandle = reinterpret_cast<RecognitionHandle>(pCaffeNet);
+        *pHandle = reinterpret_cast<DNHPXFaceRecogHandle>(pCaffeNet);
 
         g_bFaceRecognitionInited = true;
         ++g_FaceRecognitionInitCount;
@@ -361,7 +361,7 @@ int __stdcall InitOLDFaceRecognition(const char *szParamName,
     return retValue;
 }
 
-int __stdcall UninitFaceRecognition(RecognitionHandle handle)
+int __stdcall UninitFaceRecognition(DNHPXFaceRecogHandle handle)
 {
     if (g_bFaceRecognitionInited) {
         --g_FaceRecognitionInitCount;

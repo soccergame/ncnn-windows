@@ -4,15 +4,12 @@
 #define __stdcall
 #endif
 
+#include "dnhpx_structure.h"
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif	//	__cplusplus
-
-#ifndef _THIDFACEHANDLE
-#define _THIDFACEHANDLE
-	typedef void *BeautyHandle;
-#endif	//	_THIDFACEHANDLE
 
 	/**
 	 *	\brief set feature extraction library path
@@ -26,14 +23,14 @@ extern "C"
 	 *	\return int error code defined in THIDErrorDef.h	 
 	 */
     int __stdcall InitFaceBeauty(const char *szResName,
-        BeautyHandle *pHandle, int num_threads = 1, bool light_mode = true);
+        DNHPXFaceAttHandle*pHandle, int num_threads = 1, bool light_mode = true);
 
     /**
     *	\brief initialize deep face feature extraction sdk
     *	\return int error code defined in THIDErrorDef.h
     */
     int __stdcall InitOLDFaceBeauty(const char *szParamName,
-        const char *szBinName, BeautyHandle *pHandle, 
+        const char *szBinName, DNHPXFaceAttHandle*pHandle,
         int num_threads = 1, bool light_mode = true);
 	
 
@@ -41,7 +38,7 @@ extern "C"
 	 *	\brief free deep face feature extraction sdk
 	 *	\return int error code defined in THIDErrorDef.h
 	 */
-	int __stdcall UninitFaceBeauty(BeautyHandle handle);
+	int __stdcall UninitFaceBeauty(DNHPXFaceAttHandle handle);
 
 	/**
 	 *	\brief get deep face feature size in bytes
@@ -60,7 +57,7 @@ extern "C"
     *         pFeatures 返回的颜值分数
     *         fea_dim 返回的pFeatures的长度
     */
-    int __stdcall GetFaceBeautyScore(BeautyHandle handle,
+    int __stdcall GetFaceBeautyScore(DNHPXFaceAttHandle handle,
         const float *feaPoints, const unsigned char *image_data,int width, 
         int height, int channel, float &beauty_score);
 #ifdef __cplusplus

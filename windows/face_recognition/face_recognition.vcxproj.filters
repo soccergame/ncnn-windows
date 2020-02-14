@@ -13,17 +13,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\examples\face_recognition\face_recognition.h">
+    <None Include="..\..\examples\face_recognition\face_recognition.def" />
+    <None Include="..\..\examples\face_recognition\face_recognitionD.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\examples\face_recognition\dnhpx_face_recognition.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\examples\face_recognition\face_recognition.cpp">
+    <ClCompile Include="..\..\examples\face_recognition\dnhpx_face_recognition.cpp">
       <Filter>src</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\examples\face_recognition\face_recognition.def" />
-    <None Include="..\..\examples\face_recognition\face_recognitionD.def" />
   </ItemGroup>
 </Project>

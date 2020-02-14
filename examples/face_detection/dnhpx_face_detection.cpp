@@ -6,6 +6,7 @@
 #include <exception>
 
 #include "dnhpx_face_detection.h"
+#include "dnhpx_utility.h"
 #include "mtcnn.h"
 #include "dnhpx_error_code.h"
 
@@ -310,7 +311,7 @@ int __stdcall DNHPXUninitFaceDetect(DNHPXFaceDetHandle handle)
 // 版本1.0，暂时不考虑人脸的位置，而是对全图进行滤波
 int __stdcall DNHPXFaceBuffering(const unsigned char* input_image,
     int image_width, int image_height, std::vector<DNHPXFaceRect>& face_box, 
-    unsigned char* output_image, dnhpx::FaceBufferingParam param)
+    unsigned char* output_image, FaceBufferingParam param)
 {
     if (input_image == NULL) {
         return DNHPX_INVALID_INPUT;

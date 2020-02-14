@@ -27,10 +27,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\examples\face_beauty\face_beauty.cpp" />
+    <ClCompile Include="..\..\examples\face_beauty\dnhpx_face_beauty.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\examples\face_beauty\face_beauty.h" />
+    <ClInclude Include="..\..\examples\face_beauty\dnhpx_face_beauty.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\examples\face_beauty\face_beauty.def" />

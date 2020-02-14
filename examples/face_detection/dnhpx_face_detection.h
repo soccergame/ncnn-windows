@@ -5,7 +5,7 @@
 #define __stdcall
 #endif
 
-#include "dnhpx_utility.h"
+#include "dnhpx_structure.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,7 +41,7 @@ extern "C" {
      */
     int __stdcall DNHPXFaceBuffering(const unsigned char* input_image,
         int image_width, int image_height, std::vector<DNHPXFaceRect>& face_box,
-        unsigned char* output_image, dnhpx::FaceBufferingParam param = dnhpx::FaceBufferingParam());
+        unsigned char* output_image, FaceBufferingParam param = FaceBufferingParam());
 
 #ifdef __cplusplus
 }

@@ -4,7 +4,7 @@
 #define __stdcall
 #endif
 
-#include "dnhpx_utility.h"
+#include "dnhpx_structure.h"
 
 #ifdef __cplusplus
 extern "C"
