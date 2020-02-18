@@ -119,6 +119,10 @@ public:
 };
 
 // layer factory function
+// 声明了一个函数指针，即 指向任意函数名，只要返回值类型和传入参数一致即可
+// 这里typedef通过类型别名的方式，定义了一个函数指针：
+// layer* (*layer_creator_func) ();
+// 此后layer_creator_func这个指针可以指向任何返回值为layer*，传入参数为空的函数，而不必理会函数名
 typedef Layer* (*layer_creator_func)();
 
 struct layer_registry_entry
@@ -140,6 +144,9 @@ Layer* create_layer(const char* type);
 // create layer from layer type
 Layer* create_layer(int index);
 
+// # 将宏参数不经扩展地转换成字符串常量
+// ## 标记连接操作
+// 带参数的宏定义
 #define DEFINE_LAYER_CREATOR(name) \
     ::ncnn::Layer* name##_layer_creator() { return new name; }
 

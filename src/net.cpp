@@ -1257,6 +1257,7 @@ Layer* Net::create_custom_layer(int index)
     if (index < 0 || index >= custom_layer_registry_entry_count)
         return 0;
 
+    // creator是个函数，已经被替换为type定义的函数，返回type类指针
     layer_creator_func layer_creator = custom_layer_registry[index].creator;
     if (!layer_creator)
         return 0;
